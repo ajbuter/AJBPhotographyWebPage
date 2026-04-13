@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJB Photographs | Aiden Buter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #38f2f5;
+    --cyan-dark: #1dd6d9;
+    --cyan-pale: #e8fffe;
+    --cyan-mid: #b0f7f8;
+    --white: #ffffff;
+    --off-white: #f7fefe;
+    --charcoal: #1a2a2b;
+    --slate: #3d5557;
+    --muted: #7a9fa1;
+    --border: rgba(56,242,245,0.2);
+    --shadow: 0 4px 32px rgba(56,242,245,0.12);
+    --shadow-lg: 0 16px 64px rgba(56,242,245,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--charcoal);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ========== NAV ========== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem;
+    height: 72px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: var(--shadow); }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--charcoal);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo span {
+    color: var(--cyan-dark);
+  }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0; height: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+  .nav-links a:hover { color: var(--charcoal); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-instagram {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 18px;
+    background: var(--cyan);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-instagram:hover { background: var(--cyan-dark); transform: translateY(-1px); }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--charcoal); transition: all 0.3s; }
+
+  /* ========== HERO ========== */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 72px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #e8fffe 0%, #f0fefe 40%, #c8f9fa 100%);
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(56,242,245,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,242,245,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56,242,245,0.25) 0%, transparent 70%);
+  }
+  .hero-circle-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .hero-circle-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    animation: heroReveal 1s ease both;
+  }
+
+  @keyframes heroReveal {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan-dark);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    animation: heroReveal 1s 0.1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: var(--charcoal);
+    margin-bottom: 1.5rem;
+    animation: heroReveal 1s 0.2s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--cyan-dark);
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 400px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    animation: heroReveal 1s 0.3s ease both;
+  }
+
+  .hero-ctas {
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    flex-wrap: wrap;
+    animation: heroReveal 1s 0.4s ease both;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary:hover { background: var(--slate); transform: translateY(-2px); }
+
+  .btn-secondary {
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--charcoal);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1.5px solid var(--charcoal);
+    transition: all 0.2s;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-secondary:hover { background: var(--charcoal); color: var(--white); transform: translateY(-2px); }
+
+  .hero-scroll {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+    animation: heroReveal 1s 0.6s ease both;
+  }
+  .hero-scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.4; transform: scaleY(0.7); }
+  }
+
+  /* ========== SECTIONS ========== */
+  section { padding: 6rem 0; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 3rem; }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan-dark);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+  }
+
+  .section-title em { font-style: italic; color: var(--cyan-dark); }
+
+  /* ========== CATEGORIES GRID ========== */
+  #work { background: var(--white); }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5px;
+    margin-top: 3rem;
+  }
+
+  .cat-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--cyan-pale);
+    display: flex; align-items: flex-end;
+    transition: transform 0.4s;
+  }
+  .cat-card:first-child { grid-column: span 2; aspect-ratio: auto; min-height: 500px; }
+  .cat-card:hover { transform: scale(0.99); }
+  .cat-card:hover .cat-overlay { opacity: 1; }
+  .cat-card:hover .cat-bg { transform: scale(1.05); }
+
+  .cat-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform 0.6s ease;
+  }
+
+  .cat-bg-sports {
+    background: linear-gradient(135deg, #0a1a2e 0%, #1a3a5c 50%, #1dd6d9 100%);
+  }
+  .cat-bg-auto {
+    background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 50%, #38f2f5 100%);
+  }
+  .cat-bg-portrait {
+    background: linear-gradient(135deg, #2a1a0e 0%, #5c3a1a 50%, #f5d038 100%);
+  }
+  .cat-bg-env {
+    background: linear-gradient(135deg, #0a2e1a 0%, #1a5c3a 50%, #38f5a0 100%);
+  }
+
+  .cat-pattern {
+    position: absolute; inset: 0; opacity: 0.15;
+    background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.4) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  .cat-overlay {
+    position: absolute; inset: 0;
+    background: rgba(56,242,245,0.15);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .cat-info {
+    position: relative; z-index: 2;
+    padding: 2rem;
+    color: var(--white);
+  }
+
+  .cat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  }
+
+  .cat-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    display: block;
+  }
+
+  .cat-count {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan-mid);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .cat-arrow {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    font-size: 1rem;
+    margin-top: 0.75rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .cat-card:hover .cat-arrow { background: var(--cyan); border-color: var(--cyan); color: var(--charcoal); }
+
+  /* ========== ALBUMS PAGE ========== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    background: var(--white);
+    padding: 6rem 0 3rem;
+    border-bottom: 1px solid var(--border);
+    margin-top: 72px;
+  }
+
+  .breadcrumb {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+  .breadcrumb a { color: var(--cyan-dark); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .sport-tabs {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .sport-tab {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--slate);
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sport-tab:hover { border-color: var(--cyan); color: var(--charcoal); }
+  .sport-tab.active { background: var(--cyan); border-color: var(--cyan); color: var(--charcoal); }
+
+  /* ========== ALBUMS GRID ========== */
+  .albums-section { padding: 3rem 0 6rem; }
+
+  .albums-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+  }
+
+  .albums-count { font-size: 0.8rem; color: var(--muted); }
+
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .album-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .album-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+  .album-thumb {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, var(--cyan-pale), var(--cyan-mid));
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .album-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .album-card:hover .album-thumb img { transform: scale(1.05); }
+
+  .album-thumb-placeholder {
+    font-size: 3rem;
+    opacity: 0.4;
+  }
+
+  .album-thumb-count {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.6);
+    color: var(--white);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+
+  .album-info { padding: 1.25rem; }
+
+  .album-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  .album-meta {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.72rem; color: var(--muted);
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .album-tag {
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--border);
+  }
+
+  .album-actions {
+    display: flex; gap: 0.5rem;
+  }
+
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .btn-share {
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    border: 1px solid var(--border);
+  }
+  .btn-share:hover { background: var(--cyan); color: var(--charcoal); }
+
+  .btn-view {
+    background: var(--charcoal);
+    color: var(--white);
+  }
+  .btn-view:hover { background: var(--slate); }
+
+  /* ========== PHOTO LIGHTBOX ========== */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(10,20,22,0.97);
+    align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .lightbox.open { display: flex; }
+
+  .lightbox-img-wrap {
+    position: relative;
+    max-width: 90vw; max-height: 85vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .lightbox-img {
+    max-width: 90vw; max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 32px 100px rgba(0,0,0,0.8);
+  }
+
+  .lightbox-close {
+    position: fixed; top: 1.5rem; right: 1.5rem;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-close:hover { background: rgba(56,242,245,0.3); }
+
+  .lightbox-nav {
+    position: fixed;
+    top: 50%; transform: translateY(-50%);
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-nav:hover { background: rgba(56,242,245,0.3); }
+  .lightbox-prev { left: 1.5rem; }
+  .lightbox-next { right: 1.5rem; }
+
+  .lightbox-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(to top, rgba(10,20,22,1), transparent);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .lightbox-caption { color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+
+  .btn-download {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 22px;
+    background: var(--cyan);
+    color: var(--charcoal);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+  }
+  .btn-download:hover { background: var(--cyan-dark); }
+
+  /* ========== ALBUM VIEW ========== */
+  .album-view-header {
+    background: var(--white);
+    padding: 6rem 0 3rem;
+    margin-top: 72px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .album-view-meta {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+
+  .album-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 6px;
+    padding: 3rem 0;
+  }
+
+  .photo-item {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: var(--cyan-pale);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .photo-item:hover img { transform: scale(1.05); }
+  .photo-item-overlay {
+    position: absolute; inset: 0;
+    background: rgba(56,242,245,0.1);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo-item:hover .photo-item-overlay { opacity: 1; }
+  .photo-item-overlay-icon { font-size: 2rem; color: var(--white); }
+
+  .photo-placeholder-icon { font-size: 3rem; opacity: 0.2; }
+
+  /* ========== ADMIN PANEL ========== */
+  .admin-panel {
+    position: fixed; inset: 0; z-index: 5000;
+    background: rgba(10,20,22,0.85);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .admin-panel.open { display: flex; }
+
+  .admin-modal {
+    background: var(--white);
+    border-radius: 16px;
+    width: 90%; max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  }
+
+  .admin-modal-header {
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .admin-modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  .admin-close {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .admin-close:hover { background: var(--cyan-pale); }
+
+  .admin-body { padding: 1.5rem 2rem 2rem; }
+
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 6px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    background: var(--off-white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--cyan);
+    background: var(--white);
+  }
+  .form-textarea { min-height: 80px; resize: vertical; }
+
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--cyan);
+    background: var(--cyan-pale);
+  }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-zone-icon { font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--cyan-dark); }
+  .upload-zone-text { font-size: 0.85rem; color: var(--slate); }
+  .upload-zone-text strong { color: var(--charcoal); }
+
+  .upload-preview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  .upload-preview-item {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    background: var(--cyan-pale);
+  }
+  .upload-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .upload-preview-remove {
+    position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: var(--white);
+    font-size: 0.65rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    border: none;
+  }
+
+  .admin-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .admin-tab {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .admin-tab.active { color: var(--charcoal); border-bottom-color: var(--cyan); }
+
+  .admin-tab-content { display: none; }
+  .admin-tab-content.active { display: block; }
+
+  .lightroom-hint {
+    background: var(--cyan-pale);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: var(--slate);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .lightroom-hint strong { color: var(--charcoal); display: block; margin-bottom: 4px; }
+
+  /* ========== ABOUT ========== */
+  #about { background: var(--charcoal); color: var(--white); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .about-img-frame {
+    aspect-ratio: 3/4;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #1dd6d9 0%, #0a6b6c 50%, #1a2a2b 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-img-frame::after {
+    content: 'AJB';
+    position: absolute; bottom: 1.5rem; right: 1.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: 4px;
+  }
+
+  .about-deco {
+    position: absolute; bottom: -1.5rem; left: -1.5rem;
+    width: 100px; height: 100px;
+    border: 2px solid var(--cyan);
+    border-radius: 4px;
+  }
+
+  .about-label { color: var(--cyan); margin-bottom: 0.75rem; }
+
+  .about-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--white);
+  }
+  .about-title em { font-style: italic; color: var(--cyan); }
+
+  .about-bio {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-stats {
+    display: flex; gap: 2rem; margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .about-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    display: block;
+  }
+  .about-stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ========== CONTACT ========== */
+  #contact { background: var(--white); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-info-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+  .contact-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--cyan-pale);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .contact-info-text strong {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    color: var(--charcoal);
+  }
+  .contact-info-text span {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .contact-info-text a { color: var(--cyan-dark); text-decoration: none; }
+  .contact-info-text a:hover { text-decoration: underline; }
+
+  .contact-form .form-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+
+  /* ========== FOOTER ========== */
+  footer {
+    background: var(--charcoal);
+    color: rgba(255,255,255,0.5);
+    padding: 3rem 0;
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+  footer strong { color: var(--cyan); }
+
+  /* ========== ADMIN BUTTON ========== */
+  .admin-btn-float {
+    position: fixed; bottom: 2rem; right: 2rem;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--charcoal);
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 900;
+  }
+  .admin-btn-float:hover { transform: rotate(15deg) scale(1.1); background: var(--slate); }
+
+  /* ========== SHARE TOAST ========== */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    border: 1px solid var(--cyan);
+    z-index: 9999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ========== EMPTY STATE ========== */
+  .empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--muted);
+  }
+  .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+  .empty-state-text { font-size: 0.9rem; }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 900px) {
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    .cat-card:first-child { grid-column: span 2; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .about-visual { display: none; }
+    nav { padding: 0 1.5rem; }
+    .container { padding: 0 1.5rem; }
+    nav ul { display: none; }
+    .hamburger { display: flex; }
+    .nav-instagram { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .categories-grid { grid-template-columns: 1fr; }
+    .cat-card:first-child { grid-column: span 1; }
+    .contact-form .form-row { grid-template-columns: 1fr; }
+    .upload-preview { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Mobile nav */
+  .mobile-nav {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--white);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2rem;
+    transform: translateX(100%);
+    transition: transform 0.35s ease;
+  }
+  .mobile-nav.open { transform: translateX(0); }
+  .mobile-nav a {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    color: var(--charcoal);
+    text-decoration: none;
+    font-style: italic;
+  }
+  .mobile-nav-close {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: none; border: none;
+    color: var(--charcoal);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" onclick="showHome()">AJB<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#work" onclick="showHome(); setTimeout(()=>document.getElementById('work').scrollIntoView({behavior:'smooth'}),100)">Work</a></li>
+    <li><a href="#about" onclick="showHome(); setTimeout(()=>document.getElementById('about').scrollIntoView({behavior:'smooth'}),100)">About</a></li>
+    <li><a href="#contact" onclick="showHome(); setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),100)">Contact</a></li>
+  </ul>
+  <a href="https://instagram.com/ajbphotographs" target="_blank" class="nav-instagram">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    @ajbphotographs
+  </a>
+  <div class="hamburger" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-close" onclick="toggleMobile()">✕</button>
+  <a href="#hero" onclick="showHome();toggleMobile()">Home</a>
+  <a href="#work" onclick="showHome();toggleMobile();setTimeout(()=>document.getElementById('work').scrollIntoView({behavior:'smooth'}),100)">Work</a>
+  <a href="#about" onclick="showHome();toggleMobile();setTimeout(()=>document.getElementById('about').scrollIntoView({behavior:'smooth'}),100)">About</a>
+  <a href="#contact" onclick="showHome();toggleMobile();setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),100)">Contact</a>
+  <a href="https://instagram.com/ajbphotographs" target="_blank">Instagram</a>
+</div>
+
+<!-- =================== HOME PAGE =================== -->
+<div id="homePage" class="page active">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-circle hero-circle-1"></div>
+    <div class="hero-circle hero-circle-2"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Missouri S&T Sports Photography </p>
+      <h1 class="hero-title">Aiden<em> Buter</em></h1>
+      <p class="hero-subtitle">Built in the Mine. Captured in motion.</p>
+      <div class="hero-ctas">
+        <a href="#work" class="btn-primary" onclick="setTimeout(()=>document.getElementById('work').scrollIntoView({behavior:'smooth'}),50)">View Portfolio</a>
+        <a href="#contact" class="btn-secondary" onclick="setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),50)">Get In Touch</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- WORK / CATEGORIES -->
+  <section id="work">
+    <div class="container">
+      <p class="section-label">Portfolio</p>
+      <h2 class="section-title">Explore the<br><em>Collection</em></h2>
+    </div>
+    <div class="container" style="margin-top:2rem;">
+      <div class="categories-grid">
+        <div class="cat-card" onclick="showCategory('sports')">
+          <div class="cat-bg cat-bg-sports"></div>
+          <div class="cat-pattern"></div>
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <span class="cat-icon">🏆</span>
+            <span class="cat-name">Sports</span>
+            <span class="cat-count" id="sports-count">0 albums</span>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+        <div class="cat-card" onclick="showCategory('automotive')">
+          <div class="cat-bg cat-bg-auto"></div>
+          <div class="cat-pattern"></div>
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <span class="cat-icon">🚗</span>
+            <span class="cat-name">Automotive</span>
+            <span class="cat-count" id="automotive-count">0 albums</span>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+        <div class="cat-card" onclick="showCategory('portraits')">
+          <div class="cat-bg cat-bg-portrait"></div>
+          <div class="cat-pattern"></div>
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <span class="cat-icon">🎭</span>
+            <span class="cat-name">Portraits</span>
+            <span class="cat-count" id="portraits-count">0 albums</span>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+        <div class="cat-card" onclick="showCategory('environmental')">
+          <div class="cat-bg cat-bg-env"></div>
+          <div class="cat-pattern"></div>
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <span class="cat-icon">🌿</span>
+            <span class="cat-name">Environmental</span>
+            <span class="cat-count" id="environmental-count">0 albums</span>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-img-frame"></div>
+          <div class="about-deco"></div>
+        </div>
+        <div class="about-text">
+          <p class="section-label about-label">About the Photographer</p>
+          <h2 class="about-title">Capturing<br>moments that<br><em>matter</em></h2>
+          <p class="about-bio">Aiden is a photographer and student at Missouri University of Science and Technology in Rolla, MO. What started as a passion for capturing the energy of competition has grown into a full creative practice spanning sports, automotive, portraits, and the natural world.</p>
+          <p class="about-bio">With a sharp eye for the decisive moment and an instinct for light, Aiden brings technical discipline and artistic vision to every frame, whether chasing the action on a football field, shooting cars at golden hour, or finding quiet power in a portrait session.</p>
+          <p class="about-bio">His work has been featured alongside Missouri S&T athletics and continues to grow through his Instagram page <a href="https://instagram.com/ajbphotographs" target="_blank" style="color:var(--cyan)">@ajbphotographs</a>.</p>
+          <div class="about-stats">
+            <div>
+              <span class="about-stat-num" id="stat-albums">0</span>
+              <span class="about-stat-label">Albums</span>
+            </div>
+            <div>
+              <span class="about-stat-num" id="stat-photos">0</span>
+              <span class="about-stat-label">Photos</span>
+            </div>
+            <div>
+              <span class="about-stat-num">4</span>
+              <span class="about-stat-label">Categories</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label">Get In Touch</p>
+      <h2 class="section-title">Let's work<br><em>together</em></h2>
+      <div class="contact-grid" style="margin-top:3rem;">
+        <div>
+          <p style="color:var(--muted);line-height:1.8;margin-bottom:2rem;font-size:0.95rem;">Whether you're looking to book a session, license an image, or just want to say hello — reach out and Aiden will get back to you as soon as possible.</p>
+          <div class="contact-info-item">
+            <div class="contact-icon">📷</div>
+            <div class="contact-info-text">
+              <strong>Instagram</strong>
+              <span><a href="https://instagram.com/ajbphotographs" target="_blank">@ajbphotographs</a></span>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon">📍</div>
+            <div class="contact-info-text">
+              <strong>Location</strong>
+              <span>Rolla, Missouri · Missouri S&T</span>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon">🏆</div>
+            <div class="contact-info-text">
+              <strong>Specialties</strong>
+              <span>Sports, Automotive, Portraits, Environmental</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-input" placeholder="Jane">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-input" placeholder="Doe">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-input" placeholder="Booking inquiry…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" placeholder="Tell me about your project…"></textarea>
+          </div>
+          <button class="btn-primary" onclick="showToast('Message sent! Aiden will be in touch soon.')">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 <strong>AJB Photographs</strong> · Aiden Buter · Missouri S&T</p>
+      <p style="margin-top:8px;font-size:0.7rem;">All images are the property of Aiden Buter. Do not reproduce without permission.</p>
+    </div>
+  </footer> 
+</div>
+
+<!-- =================== CATEGORY PAGE =================== -->
+<div id="categoryPage" class="page">
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="#" onclick="showHome()">Home</a>
+        <span>›</span>
+        <span id="cat-breadcrumb">Category</span>
+      </div>
+      <p class="section-label" id="cat-label">Category</p>
+      <h1 class="section-title" id="cat-title">Category <em>Name</em></h1>
+      <div class="sport-tabs" id="sportTabs" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="albums-section">
+    <div class="container">
+      <div class="albums-toolbar">
+        <span class="albums-count" id="albums-count">— albums</span>
+        <button class="btn-primary btn-sm" style="padding:10px 22px;" onclick="openAdmin('album')">+ New Album</button>
+      </div>
+      <div class="albums-grid" id="albumsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== ALBUM VIEW PAGE =================== -->
+<div id="albumPage" class="page">
+  <div class="album-view-header">
+    <div class="container">
+      <div class="breadcrumb" id="albumBreadcrumb"></div>
+      <div class="album-view-meta">
+        <span class="album-tag" id="albumTagDisplay"></span>
+        <span style="font-size:0.75rem;color:var(--muted);" id="albumDateDisplay"></span>
+      </div>
+      <h1 class="section-title" id="albumPageTitle">Album <em>Name</em></h1>
+      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;">
+        <button class="btn-sm btn-share" onclick="shareAlbum()">🔗 Share Album</button>
+        <button class="btn-primary btn-sm" style="padding:10px 22px;" onclick="openAdmin('photos')">+ Add Photos</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="album-photos-grid" id="albumPhotosGrid"></div>
+  </div>
+</div>
+
+<!-- =================== LIGHTBOX =================== -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">‹</button>
+  <div class="lightbox-img-wrap">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  </div>
+  <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
+  <div class="lightbox-footer">
+    <span class="lightbox-caption" id="lightboxCaption"></span>
+    <a class="btn-download" id="lightboxDownload" download>
+      ↓ Download Full Size
+    </a>
+  </div>
+</div>
+
+<!-- =================== ADMIN PANEL =================== -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h2 class="admin-modal-title" id="adminTitle">Admin Panel</h2>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-body">
+
+      <!-- TABS -->
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" onclick="switchAdminTab('album')">New Album</button>
+        <button class="admin-tab" onclick="switchAdminTab('photos')">Add Photos</button>
+      </div>
+
+      <!-- NEW ALBUM TAB -->
+      <div class="admin-tab-content active" id="tabAlbum">
+        <div class="form-group">
+          <label class="form-label">Album Name</label>
+          <input type="text" class="form-input" id="albumName" placeholder="e.g. S&T vs Mizzou — Football">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="albumCategory">
+            <option value="sports">Sports</option>
+            <option value="automotive">Automotive</option>
+            <option value="portraits">Portraits</option>
+            <option value="environmental">Environmental</option>
+          </select>
+        </div>
+        <div class="form-group" id="sportTypeGroup">
+          <label class="form-label">Sport</label>
+          <select class="form-select" id="albumSport">
+            <option value="Football">Football</option>
+            <option value="Soccer">Soccer</option>
+            <option value="Basketball">Basketball</option>
+            <option value="Baseball">Baseball</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Track & Field">Track & Field</option>
+            <option value="Swimming">Swimming</option>
+            <option value="Tennis">Tennis</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Game / Event Date</label>
+          <input type="date" class="form-input" id="albumDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma-separated)</label>
+          <input type="text" class="form-input" id="albumTags" placeholder="e.g. NCAA, Home, 2025">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cover Photo</label>
+          <div class="upload-zone" id="coverUploadZone" onclick="document.getElementById('coverInput').click()">
+            <input type="file" id="coverInput" accept="image/*" onchange="handleCoverUpload(event)" style="display:none">
+            <div class="upload-zone-icon">🖼️</div>
+            <p class="upload-zone-text"><strong>Click to upload</strong> cover image</p>
+            <p class="upload-zone-text" style="font-size:0.7rem;margin-top:4px;color:var(--muted)">JPG, PNG, WEBP</p>
+          </div>
+          <div id="coverPreviewWrap" style="margin-top:0.75rem;display:none;">
+            <img id="coverPreviewImg" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;" src="" alt="Cover">
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:14px;" onclick="createAlbum()">Create Album</button>
+      </div>
+
+      <!-- ADD PHOTOS TAB -->
+      <div class="admin-tab-content" id="tabPhotos">
+        <div class="form-group">
+          <label class="form-label">Select Album</label>
+          <select class="form-select" id="photoAlbumSelect"></select>
+        </div>
+
+        <div class="admin-tabs" style="margin-top:1rem;margin-bottom:0;">
+          <button class="admin-tab active" onclick="switchPhotoTab('upload')" id="ptab-upload">Upload Files</button>
+          <button class="admin-tab" onclick="switchPhotoTab('url')" id="ptab-url">Paste URLs</button>
+          <button class="admin-tab" onclick="switchPhotoTab('lightroom')" id="ptab-lightroom">Lightroom</button>
+        </div>
+
+        <div id="photoTabUpload" style="margin-top:1rem;">
+          <div class="upload-zone" onclick="document.getElementById('photosInput').click()">
+            <input type="file" id="photosInput" accept="image/*" multiple onchange="handlePhotosUpload(event)" style="display:none">
+            <div class="upload-zone-icon">📷</div>
+            <p class="upload-zone-text"><strong>Click or drag</strong> to upload photos</p>
+            <p class="upload-zone-text" style="font-size:0.7rem;margin-top:4px;color:var(--muted)">Multiple files supported · Full JPG downloaded by viewers</p>
+          </div>
+          <div class="upload-preview" id="uploadPreview"></div>
+        </div>
+
+        <div id="photoTabUrl" style="display:none;margin-top:1rem;">
+          <div class="form-group">
+            <label class="form-label">Image URLs (one per line)</label>
+            <textarea class="form-textarea" id="photoUrls" style="min-height:120px;" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"></textarea>
+          </div>
+        </div>
+
+        <div id="photoTabLightroom" style="display:none;margin-top:1rem;">
+          <div class="lightroom-hint">
+            <strong>📱 How to import from Lightroom</strong>
+            Lightroom Web share links don't expose a public API, but you can still import quickly:<br><br>
+            1. Open your Lightroom Web shared album in a browser.<br>
+            2. Right-click each photo → "Copy image address" and paste the URLs in the <strong>Paste URLs</strong> tab.<br>
+            3. Or export photos locally and drag them into <strong>Upload Files</strong>.<br><br>
+            <strong>Tip:</strong> Use Google Photos shared albums — right-click any photo → "Open image in new tab" to get a direct URL.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lightroom Web Share URL (for reference)</label>
+            <input type="url" class="form-input" placeholder="https://lightroom.adobe.com/shares/...">
+          </div>
+        </div>
+
+        <button class="btn-primary" style="width:100%;padding:14px;margin-top:1.25rem;" onclick="addPhotosToAlbum()">Add Photos to Album</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN FLOAT BUTTON -->
+<button class="admin-btn-float" onclick="openAdmin('album')" title="Admin: Add Albums & Photos">⚙</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// =============== DATA STORE ===============
+let db = JSON.parse(localStorage.getItem('ajb_db') || '{"albums":[]}');
+let currentCategory = 'sports';
+let currentAlbumId = null;
+let currentSportFilter = 'All';
+let lightboxImages = [];
+let lightboxIndex = 0;
+let pendingCoverDataUrl = null;
+let pendingPhotoDataUrls = [];
+let currentPhotoTab = 'upload';
+
+function saveDb() {
+  localStorage.setItem('ajb_db', JSON.stringify(db));
+}
+
+// =============== NAV ===============
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+function toggleMobile() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+// =============== PAGE ROUTING ===============
+function showHome() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('homePage').classList.add('active');
+  updateStats();
+  updateCounts();
+  window.scrollTo(0, 0);
+}
+
+function showCategory(cat) {
+  currentCategory = cat;
+  currentSportFilter = 'All';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('categoryPage').classList.add('active');
+  renderCategoryPage();
+  window.scrollTo(0, 0);
+}
+
+function showAlbum(albumId) {
+  currentAlbumId = albumId;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('albumPage').classList.add('active');
+  renderAlbumPage();
+  window.scrollTo(0, 0);
+}
+
+// =============== CATEGORY PAGE ===============
+const catMeta = {
+  sports:       { label: 'Sports Photography', title: 'Action &amp; <em>Sports</em>', icon: '🏆' },
+  automotive:   { label: 'Automotive Photography', title: 'Cars &amp; <em>Automotive</em>', icon: '🚗' },
+  portraits:    { label: 'Portrait Photography', title: 'Portraits &amp; <em>People</em>', icon: '🎭' },
+  environmental:{ label: 'Environmental Photography', title: 'Nature &amp; <em>Environment</em>', icon: '🌿' },
+};
+
+const sportsList = ['All','Football','Soccer','Basketball','Baseball','Volleyball','Track & Field','Swimming','Tennis','Other'];
+
+function renderCategoryPage() {
+  const meta = catMeta[currentCategory];
+  document.getElementById('cat-breadcrumb').textContent = meta.label;
+  document.getElementById('cat-label').textContent = meta.label;
+  document.getElementById('cat-title').innerHTML = meta.title;
+
+  const sportTabs = document.getElementById('sportTabs');
+  if (currentCategory === 'sports') {
+    sportTabs.style.display = 'flex';
+    sportTabs.innerHTML = sportsList.map(s =>
+      `<button class="sport-tab ${s === currentSportFilter ? 'active' : ''}" onclick="filterSport('${s}')">${s}</button>`
+    ).join('');
+  } else {
+    sportTabs.style.display = 'none';
+  }
+
+  renderAlbumsGrid();
+}
+
+function filterSport(sport) {
+  currentSportFilter = sport;
+  document.querySelectorAll('.sport-tab').forEach(t => t.classList.toggle('active', t.textContent === sport));
+  renderAlbumsGrid();
+}
+
+function renderAlbumsGrid() {
+  let albums = db.albums.filter(a => a.category === currentCategory);
+  if (currentCategory === 'sports' && currentSportFilter !== 'All') {
+    albums = albums.filter(a => a.sport === currentSportFilter);
+  }
+  albums.sort((a,b) => new Date(b.date||0) - new Date(a.date||0));
+
+  document.getElementById('albums-count').textContent = `${albums.length} album${albums.length !== 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('albumsGrid');
+  if (albums.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">${catMeta[currentCategory].icon}</div>
+      <p class="empty-state-text">No albums yet. Click "New Album" to get started.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = albums.map(a => {
+    const thumb = a.cover || '';
+    const count = (a.photos||[]).length;
+    const dateStr = a.date ? new Date(a.date+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '';
+    const tags = (a.tags||[]).slice(0,3).map(t => `<span class="album-tag">${t}</span>`).join('');
+    return `
+    <div class="album-card" onclick="showAlbum('${a.id}')">
+      <div class="album-thumb">
+        ${thumb ? `<img src="${thumb}" alt="${a.name}" loading="lazy">` : `<div class="album-thumb-placeholder">${catMeta[currentCategory].icon}</div>`}
+        <span class="album-thumb-count">${count} photo${count !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="album-info">
+        <div class="album-title">${a.name}</div>
+        <div class="album-meta">
+          ${a.sport ? `<span>🏅 ${a.sport}</span>` : ''}
+          ${dateStr ? `<span>📅 ${dateStr}</span>` : ''}
+        </div>
+        <div style="margin-bottom:0.75rem;">${tags}</div>
+        <div class="album-actions">
+          <button class="btn-sm btn-share" onclick="event.stopPropagation();shareAlbumById('${a.id}')">🔗 Share</button>
+          <button class="btn-sm btn-view">View Album →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =============== ALBUM PAGE ===============
+function renderAlbumPage() {
+  const album = db.albums.find(a => a.id === currentAlbumId);
+  if (!album) { showHome(); return; }
+
+  const catLabel = catMeta[album.category]?.label || album.category;
+  document.getElementById('albumBreadcrumb').innerHTML = `
+    <a href="#" onclick="showHome()">Home</a> ›
+    <a href="#" onclick="showCategory('${album.category}')">${catLabel}</a> ›
+    <span>${album.name}</span>
+  `;
+  document.getElementById('albumPageTitle').innerHTML = `${album.name.replace(/(.+)( .+)$/, '$1<em>$2</em>')}`;
+
+  const dateStr = album.date ? new Date(album.date+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '';
+  document.getElementById('albumTagDisplay').textContent = album.sport || album.category;
+  document.getElementById('albumDateDisplay').textContent = dateStr;
+
+  renderPhotosGrid(album);
+}
+
+function renderPhotosGrid(album) {
+  const grid = document.getElementById('albumPhotosGrid');
+  const photos = album.photos || [];
+
+  if (photos.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">📸</div>
+      <p class="empty-state-text">No photos yet. Click "+ Add Photos" to get started.</p>
+    </div>`;
+    lightboxImages = [];
+    return;
+  }
+
+  lightboxImages = photos.map(p => p.url);
+
+  grid.innerHTML = photos.map((p, i) => `
+    <div class="photo-item" onclick="openLightbox(${i})">
+      <img src="${p.url}" alt="Photo ${i+1}" loading="lazy">
+      <div class="photo-item-overlay">
+        <span class="photo-item-overlay-icon">⊕</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// =============== LIGHTBOX ===============
+function openLightbox(index) {
+  lightboxIndex = index;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateLightbox() {
+  const url = lightboxImages[lightboxIndex];
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxCaption').textContent = `${lightboxIndex+1} / ${lightboxImages.length}`;
+  const dl = document.getElementById('lightboxDownload');
+  dl.href = url;
+  dl.download = `ajb_photo_${lightboxIndex+1}.jpg`;
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lightboxNav(dir) {
+  lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+  updateLightbox();
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') lightboxNav(1);
+  if (e.key === 'ArrowLeft') lightboxNav(-1);
+  if (e.key === 'Escape') closeLightbox();
+});
+
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+
+// =============== ADMIN ===============
+function openAdmin(tab) {
+  document.getElementById('adminPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchAdminTab(tab);
+  populateAlbumSelect();
+
+  // Pre-select current category
+  if (currentCategory) {
+    const sel = document.getElementById('albumCategory');
+    if (sel) sel.value = currentCategory;
+    toggleSportGroup();
+  }
+  if (currentAlbumId) {
+    const sel = document.getElementById('photoAlbumSelect');
+    if (sel) sel.value = currentAlbumId;
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('adminPanel').classList.remove('open');
+  document.body.style.overflow = '';
+  pendingCoverDataUrl = null;
+  pendingPhotoDataUrls = [];
+  document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('coverPreviewWrap').style.display = 'none';
+}
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => {
+    const tabs = ['album','photos'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.getElementById('tabAlbum').classList.toggle('active', tab === 'album');
+  document.getElementById('tabPhotos').classList.toggle('active', tab === 'photos');
+}
+
+function switchPhotoTab(tab) {
+  currentPhotoTab = tab;
+  ['upload','url','lightroom'].forEach(t => {
+    document.getElementById(`photoTab${t.charAt(0).toUpperCase()+t.slice(1)}`).style.display = t === tab ? 'block' : 'none';
+    document.getElementById(`ptab-${t}`).classList.toggle('active', t === tab);
+  });
+}
+
+document.getElementById('albumCategory').addEventListener('change', toggleSportGroup);
+function toggleSportGroup() {
+  const cat = document.getElementById('albumCategory').value;
+  document.getElementById('sportTypeGroup').style.display = cat === 'sports' ? 'block' : 'none';
+}
+
+function handleCoverUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pendingCoverDataUrl = ev.target.result;
+    document.getElementById('coverPreviewImg').src = ev.target.result;
+    document.getElementById('coverPreviewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePhotosUpload(e) {
+  const files = Array.from(e.target.files);
+  const preview = document.getElementById('uploadPreview');
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingPhotoDataUrls.push(ev.target.result);
+      const item = document.createElement('div');
+      item.className = 'upload-preview-item';
+      const idx = pendingPhotoDataUrls.length - 1;
+      item.innerHTML = `<img src="${ev.target.result}" alt="">
+        <button class="upload-preview-remove" onclick="removePendingPhoto(${idx},this.parentElement)">✕</button>`;
+      preview.appendChild(item);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removePendingPhoto(idx, el) {
+  pendingPhotoDataUrls[idx] = null;
+  el.remove();
+}
+
+function populateAlbumSelect() {
+  const sel = document.getElementById('photoAlbumSelect');
+  if (!sel) return;
+  sel.innerHTML = db.albums.length === 0
+    ? '<option value="">— No albums yet, create one first —</option>'
+    : db.albums.map(a => `<option value="${a.id}">${a.name} (${a.category})</option>`).join('');
+}
+
+function createAlbum() {
+  const name = document.getElementById('albumName').value.trim();
+  if (!name) { showToast('Please enter an album name.'); return; }
+  const category = document.getElementById('albumCategory').value;
+  const sport = category === 'sports' ? document.getElementById('albumSport').value : null;
+  const date = document.getElementById('albumDate').value;
+  const tagsRaw = document.getElementById('albumTags').value;
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  if (sport && !tags.includes(sport)) tags.unshift(sport);
+
+  const album = {
+    id: 'album_' + Date.now(),
+    name, category, sport, date,
+    tags, cover: pendingCoverDataUrl || null,
+    photos: [],
+    createdAt: new Date().toISOString()
+  };
+
+  db.albums.push(album);
+  saveDb();
+  closeAdmin();
+  showToast(`Album "${name}" created!`);
+
+  // Reset fields
+  document.getElementById('albumName').value = '';
+  document.getElementById('albumDate').value = '';
+  document.getElementById('albumTags').value = '';
+
+  showCategory(category);
+}
+
+function addPhotosToAlbum() {
+  const albumId = document.getElementById('photoAlbumSelect').value;
+  if (!albumId) { showToast('Select an album first.'); return; }
+  const album = db.albums.find(a => a.id === albumId);
+  if (!album) return;
+
+  const newPhotos = [];
+
+  if (currentPhotoTab === 'upload') {
+    pendingPhotoDataUrls.filter(Boolean).forEach(url => newPhotos.push({ url, id: 'p_' + Date.now() + Math.random() }));
+  } else if (currentPhotoTab === 'url') {
+    const urls = document.getElementById('photoUrls').value.trim().split('\n').map(u => u.trim()).filter(Boolean);
+    urls.forEach(url => newPhotos.push({ url, id: 'p_' + Date.now() + Math.random() }));
+    document.getElementById('photoUrls').value = '';
+  }
+
+  if (newPhotos.length === 0) { showToast('No photos to add.'); return; }
+
+  if (!album.photos) album.photos = [];
+  album.photos.push(...newPhotos);
+  if (!album.cover && newPhotos[0]) album.cover = newPhotos[0].url;
+  saveDb();
+  closeAdmin();
+  showToast(`Added ${newPhotos.length} photo${newPhotos.length!==1?'s':''} to "${album.name}"!`);
+
+  if (currentAlbumId === albumId) renderAlbumPage();
+  if (document.getElementById('categoryPage').classList.contains('active')) renderAlbumsGrid();
+}
+
+// =============== SHARING ===============
+function shareAlbum() {
+  shareAlbumById(currentAlbumId);
+}
+
+function shareAlbumById(albumId) {
+  const album = db.albums.find(a => a.id === albumId);
+  if (!album) return;
+  const url = `${location.origin}${location.pathname}#album/${albumId}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast('Album link copied to clipboard!'));
+  } else {
+    prompt('Copy this link:', url);
+  }
+}
+
+// Hash routing for shared album links
+function handleHash() {
+  const hash = location.hash;
+  if (hash.startsWith('#album/')) {
+    const albumId = hash.replace('#album/', '');
+    const album = db.albums.find(a => a.id === albumId);
+    if (album) { showAlbum(albumId); return; }
+  }
+  showHome();
+}
+
+window.addEventListener('hashchange', handleHash);
+
+// =============== STATS ===============
+function updateStats() {
+  const total = db.albums.reduce((acc, a) => acc + (a.photos||[]).length, 0);
+  document.getElementById('stat-albums').textContent = db.albums.length;
+  document.getElementById('stat-photos').textContent = total;
+}
+
+function updateCounts() {
+  ['sports','automotive','portraits','environmental'].forEach(cat => {
+    const c = db.albums.filter(a => a.category === cat).length;
+    const el = document.getElementById(`${cat}-count`);
+    if (el) el.textContent = `${c} album${c !== 1 ? 's' : ''}`;
+  });
+}
+
+// =============== TOAST ===============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// =============== INIT ===============
+toggleSportGroup();
+handleHash();
+if (!location.hash || location.hash === '#') { showHome(); }
+</script>
+</body>
+</html>
