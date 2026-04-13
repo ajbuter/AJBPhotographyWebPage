@@ -1411,8 +1411,19 @@ let pendingCoverDataUrl = null;
 let pendingPhotoDataUrls = [];
 let currentPhotoTab = 'upload';
 
-function saveDb() {
-  localStorage.setItem('ajb_db', JSON.stringify(db));
+async function saveDb() {
+  const res = await fetch('/api/db', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(db)
+  });
+  const data = await res.json();
+  console.log('saveDb response:', data);
+}
+
+async function loadDb() {
+  const res = await fetch('/api/db');
+  db = await res.json();
 }
 
 // =============== NAV ===============
@@ -1664,40 +1675,67 @@ function toggleSportGroup() {
   document.getElementById('sportTypeGroup').style.display = cat === 'sports' ? 'block' : 'none';
 }
 
-function handleCoverUpload(e) {
+async function handleCoverUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    pendingCoverDataUrl = ev.target.result;
-    document.getElementById('coverPreviewImg').src = ev.target.result;
-    document.getElementById('coverPreviewWrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  const formData = new FormData();
+  formData.append('photos', file);
+  const res  = await fetch('/api/upload', { method: 'POST', body: formData });
+  const data = await res.json();
+  pendingCoverDataUrl = data.urls[0];
+  document.getElementById('coverPreviewImg').src = pendingCoverDataUrl;
+  document.getElementById('coverPreviewWrap').style.display = 'block';
 }
 
-function handlePhotosUpload(e) {
+async function handlePhotosUpload(e) {
   const files = Array.from(e.target.files);
+  const formData = new FormData();
+  files.forEach(f => formData.append('photos', f));
+
+  const res  = await fetch('/api/upload', { method: 'POST', body: formData });
+  const data = await res.json();
+
   const preview = document.getElementById('uploadPreview');
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      pendingPhotoDataUrls.push(ev.target.result);
-      const item = document.createElement('div');
-      item.className = 'upload-preview-item';
-      const idx = pendingPhotoDataUrls.length - 1;
-      item.innerHTML = `<img src="${ev.target.result}" alt="">
-        <button class="upload-preview-remove" onclick="removePendingPhoto(${idx},this.parentElement)">✕</button>`;
-      preview.appendChild(item);
-    };
-    reader.readAsDataURL(file);
+  data.urls.forEach(url => {
+    pendingPhotoDataUrls.push(url);
+    const item = document.createElement('div');
+    item.className = 'upload-preview-item';
+    const idx = pendingPhotoDataUrls.length - 1;
+    item.innerHTML = `<img src="${url}" alt="">
+      <button class="upload-preview-remove" onclick="removePendingPhoto(${idx},this.parentElement)">✕</button>`;
+    preview.appendChild(item);
   });
 }
-
 function removePendingPhoto(idx, el) {
   pendingPhotoDataUrls[idx] = null;
   el.remove();
 }
+
+document.addEventListener('error', async function(e) {
+  if (e.target.tagName !== 'IMG') return;
+  const src = e.target.getAttribute('src');
+  if (!src || !src.startsWith('/uploads/')) return;
+
+  // Remove from all albums in db
+  let changed = false;
+  db.albums.forEach(album => {
+    const before = (album.photos || []).length;
+    album.photos = (album.photos || []).filter(p => p.url !== src);
+    if (album.photos.length !== before) changed = true;
+
+    // If cover is missing, replace with first available photo
+    if (album.cover === src) {
+      album.cover = album.photos[0]?.url || null;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    await saveDb();
+    // Remove the broken image element from the page
+    e.target.closest('.photo-item, .album-card, .upload-preview-item')?.remove();
+  }
+}, true); // true = capture phase, catches errors before they bubble
 
 function populateAlbumSelect() {
   const sel = document.getElementById('photoAlbumSelect');
@@ -1707,7 +1745,7 @@ function populateAlbumSelect() {
     : db.albums.map(a => `<option value="${a.id}">${a.name} (${a.category})</option>`).join('');
 }
 
-function createAlbum() {
+async function createAlbum() {
   const name = document.getElementById('albumName').value.trim();
   if (!name) { showToast('Please enter an album name.'); return; }
   const category = document.getElementById('albumCategory').value;
@@ -1726,7 +1764,7 @@ function createAlbum() {
   };
 
   db.albums.push(album);
-  saveDb();
+  await saveDb();
   closeAdmin();
   showToast(`Album "${name}" created!`);
 
@@ -1738,7 +1776,7 @@ function createAlbum() {
   showCategory(category);
 }
 
-function addPhotosToAlbum() {
+async function addPhotosToAlbum() {
   const albumId = document.getElementById('photoAlbumSelect').value;
   if (!albumId) { showToast('Select an album first.'); return; }
   const album = db.albums.find(a => a.id === albumId);
@@ -1759,7 +1797,7 @@ function addPhotosToAlbum() {
   if (!album.photos) album.photos = [];
   album.photos.push(...newPhotos);
   if (!album.cover && newPhotos[0]) album.cover = newPhotos[0].url;
-  saveDb();
+  await saveDb();
   closeAdmin();
   showToast(`Added ${newPhotos.length} photo${newPhotos.length!==1?'s':''} to "${album.name}"!`);
 
@@ -1820,9 +1858,20 @@ function showToast(msg) {
 }
 
 // =============== INIT ===============
-toggleSportGroup();
-handleHash();
-if (!location.hash || location.hash === '#') { showHome(); }
+(async () => {
+  await loadDb();
+
+  // Show admin buttons only if on local network
+  const { admin } = await fetch('/api/is-admin').then(r => r.json());
+  if (!admin) {
+    document.querySelectorAll('[onclick*="openAdmin"], [onclick*="Admin"]')
+      .forEach(el => el.style.display = 'none');
+  }
+
+  toggleSportGroup();
+  handleHash();
+  if (!location.hash || location.hash === '#') showHome();
+})();
 </script>
 </body>
 </html>
