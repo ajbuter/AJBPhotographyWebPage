@@ -1014,9 +1014,9 @@
 
     <!-- Main hero text — all elements animate in with staggered delays -->
     <div class="hero-content">
-      <p class="hero-eyebrow">Missouri S&T Sports Photography</p>
+      <p class="hero-eyebrow">Missouri S&T Athletics and Personal Work</p>
       <h1 class="hero-title">Aiden<em> Buter</em></h1>
-      <p class="hero-subtitle">Built in the Mine. Captured in motion.</p>
+      <p class="hero-subtitle">Capturing Photos Since 2022.</p>
       <div class="hero-ctas">
         <a href="#work"    class="btn-primary"   onclick="setTimeout(()=>document.getElementById('work').scrollIntoView({behavior:'smooth'}),50)">View Portfolio</a>
         <a href="#contact" class="btn-secondary"  onclick="setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),50)">Get In Touch</a>
@@ -1216,7 +1216,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="container">
-      <p>© 2026 <strong>AJB Photographs</strong> · Aiden Buter · Missouri S&T</p>
+      <p>© 2026 <strong>AJB Photographs</strong> · Aiden Buter</p>
       <p style="margin-top:8px;font-size:0.7rem;">All images are the property of Aiden Buter. Do not reproduce without permission.</p>
     </div>
   </footer>
@@ -1825,7 +1825,7 @@ function renderPhotosGrid(album) {
   // Render photo tiles — clicking opens the lightbox at that index
   grid.innerHTML = photos.map((p, i) => `
     <div class="photo-item" onclick="openLightbox(${i})">
-      <img src="${p.url.replace('upload','thumb')}" alt="Photo ${i + 1}" loading="lazy">
+      <img src="${p.url}" alt="Photo ${i + 1}" loading="lazy">
       <div class="photo-item-overlay">
         <span class="photo-item-overlay-icon">⊕</span>
       </div>
@@ -1996,56 +1996,29 @@ async function handleCoverUpload(e) {
  *
  * @param {Event} e - File input change event (multiple files)
  */
-async function handlePhotosUpload_notGrouped(e) {
-  const files    = Array.from(e.target.files);
-  const formData = new FormData();
-  files.forEach(f => formData.append('photos[]', f));
 
-  const res  = await fetch('/api/upload', { method: 'POST', body: formData });
-  const data = await res.json();
-
-  const preview = document.getElementById('uploadPreview');
-  data.urls.forEach(url => {
-    pendingPhotoDataUrls.push(url);
-    const idx  = pendingPhotoDataUrls.length - 1;
-    const item = document.createElement('div');
-    item.className = 'upload-preview-item';
-    item.innerHTML = `
-      <img src="${url}" alt="">
-      <button class="upload-preview-remove" onclick="removePendingPhoto(${idx}, this.parentElement)">✕</button>`;
-    preview.appendChild(item);
-  });
-}
-
-/**
- * Handles photo file selection in the Upload Files sub-tab.
- * Sends each selected files to /api/upload in a separate request.
- * Populates the pending upload preview grid with thumbnails.
- *
- * @param {Event} e - File input change event (multiple files)
- */
-async function handlePhotosUpload(e) {
+ async function handlePhotosUpload(e) {
   const files = Array.from(e.target.files);
   const preview = document.getElementById('uploadPreview');
 
   for (const file of files) {
-      const formData = new FormData();
-      formData.append('photos', file);
+    const formData = new FormData();
+    formData.append('photos', file);
 
-      const res = await fetch('/api/upload', {method: 'POST', body: formData});
-      const data = await res.json();
+    const res = await fetch('/api/upload', {method: 'POST', body: formData});
+    const data = await res.json();
 
-      data.urls.forEach(url => {
-            pendingPhotoDataUrls.push(url);
-            const idx = pendingPhotoDataUrls.length - 1;
-            const item = document.createElement('div');
-            item.className = 'upload-preview-item';
-            item.innerHTML = `
-              <img src="${url}" alt="">
-              <button class="upload-preview-remove" onclick="removePendingPhoto(${idx}, this.parentElement)">✕</button>`;
-            preview.appendChild(item);
-      });
-   }
+    data.urls.forEach(url => {
+      pendingPhotoDataUrls.push(url);
+      const idx = pendingPhotoDataUrls.length - 1;
+      const item = document.createElement('div');
+      item.className = 'upload-preview-item';
+      item.innerHTML = `
+        <img src="${url}" alt="">
+        <button class="upload-preview-remove" onclick="removePendingPhoto(${idx}, this.parentElement)">✕</button>`;
+      preview.appendChild(item);
+    });
+  }
 }
 
 /**
