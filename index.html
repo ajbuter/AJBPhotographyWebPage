@@ -347,11 +347,39 @@
   #work { background: var(--white); }
 
   .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5px; /* Very tight gap for editorial look */
-    margin-top: 3rem;
-  }
+  display: grid;
+  gap: 1.5px;
+}
+
+.categories-grid--single {
+  grid-template-columns: 1fr;
+  margin-top: 3rem;
+}
+.categories-grid--single .cat-card {
+  grid-column: unset;   
+  aspect-ratio: unset;
+  min-height: 420px;
+}
+
+.categories-grid--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+.categories-grid--three .cat-card {
+  aspect-ratio: 3/4;
+}
+
+.personal-work-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--charcoal);
+  letter-spacing: 2px;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5px;
+}
+.personal-work-label em { font-style: italic; color: var(--cyan-dark); }
 
   .cat-card {
     position: relative;
@@ -363,7 +391,6 @@
     transition: transform 0.4s;
   }
   /* Sports card — larger, spans 2 columns, full height */
-  .cat-card:first-child { grid-column: span 2; aspect-ratio: auto; min-height: 500px; }
   .cat-card:hover { transform: scale(0.99); }
   .cat-card:hover .cat-overlay { opacity: 1; }
   .cat-card:hover .cat-bg { transform: scale(1.05); }
@@ -1038,64 +1065,63 @@
       <p class="section-label">Portfolio</p>
       <h2 class="section-title">Explore the<br><em>Collection</em></h2>
     </div>
-    <div class="container" style="margin-top:2rem;">
-      <div class="categories-grid">
+<div class="container" style="margin-top:2rem;">
 
-        <!-- SPORTS — spans 2 columns for visual emphasis -->
-        <div class="cat-card" onclick="showCategory('sports')">
-          <div class="cat-bg cat-bg-sports"></div>
-          <div class="cat-pattern"></div>
-          <div class="cat-overlay"></div>
-          <div class="cat-info">
-            <span class="cat-icon">🏆</span>
-            <span class="cat-name">Sports</span>
-            <!-- Album count is updated dynamically by updateCounts() -->
-            <span class="cat-count" id="sports-count">0 albums</span>
-            <div class="cat-arrow">→</div>
-          </div>
-        </div>
-
-        <!-- AUTOMOTIVE -->
-        <div class="cat-card" onclick="showCategory('automotive')">
-          <div class="cat-bg cat-bg-auto"></div>
-          <div class="cat-pattern"></div>
-          <div class="cat-overlay"></div>
-          <div class="cat-info">
-            <span class="cat-icon">🚗</span>
-            <span class="cat-name">Automotive</span>
-            <span class="cat-count" id="automotive-count">0 albums</span>
-            <div class="cat-arrow">→</div>
-          </div>
-        </div>
-
-        <!-- PORTRAITS -->
-        <div class="cat-card" onclick="showCategory('portraits')">
-          <div class="cat-bg cat-bg-portrait"></div>
-          <div class="cat-pattern"></div>
-          <div class="cat-overlay"></div>
-          <div class="cat-info">
-            <span class="cat-icon">🎭</span>
-            <span class="cat-name">Portraits</span>
-            <span class="cat-count" id="portraits-count">0 albums</span>
-            <div class="cat-arrow">→</div>
-          </div>
-        </div>
-
-        <!-- ENVIRONMENTAL -->
-        <div class="cat-card" onclick="showCategory('environmental')">
-          <div class="cat-bg cat-bg-env"></div>
-          <div class="cat-pattern"></div>
-          <div class="cat-overlay"></div>
-          <div class="cat-info">
-            <span class="cat-icon">🌿</span>
-            <span class="cat-name">Environmental</span>
-            <span class="cat-count" id="environmental-count">0 albums</span>
-            <div class="cat-arrow">→</div>
-          </div>
-        </div>
-
+  <!-- ROW 1: Sports -->
+  <div class="categories-grid categories-grid--single">
+    <div class="cat-card" onclick="showCategory('sports')">
+      <div class="cat-bg cat-bg-sports"></div>
+      <div class="cat-pattern"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <span class="cat-icon">🏆</span>
+        <span class="cat-name">Sports</span>
+        <span class="cat-count" id="sports-count">0 albums</span>
+        <div class="cat-arrow">→</div>
       </div>
     </div>
+  </div>
+
+  <!-- Section divider label -->
+  <div class="personal-work-label">Personal <em>Work</em></div>
+
+  <!-- ROW 2: Automotive, Portraits, Environmental -->
+  <div class="categories-grid categories-grid--three">
+    <div class="cat-card" onclick="showCategory('automotive')">
+      <div class="cat-bg cat-bg-auto"></div>
+      <div class="cat-pattern"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <span class="cat-icon">🚗</span>
+        <span class="cat-name">Automotive</span>
+        <span class="cat-count" id="automotive-count">0 albums</span>
+        <div class="cat-arrow">→</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="showCategory('portraits')">
+      <div class="cat-bg cat-bg-portrait"></div>
+      <div class="cat-pattern"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <span class="cat-icon">🎭</span>
+        <span class="cat-name">Portraits</span>
+        <span class="cat-count" id="portraits-count">0 albums</span>
+        <div class="cat-arrow">→</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="showCategory('environmental')">
+      <div class="cat-bg cat-bg-env"></div>
+      <div class="cat-pattern"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <span class="cat-icon">🌿</span>
+        <span class="cat-name">Environmental</span>
+        <span class="cat-count" id="environmental-count">0 albums</span>
+        <div class="cat-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</div>
   </section>
 
   <!-- ABOUT SECTION -->
