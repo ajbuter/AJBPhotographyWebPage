@@ -1,0 +1,956 @@
+/* ===========================================================================
+   AJB Photographs — Stylesheet
+   @author  Aiden Buter
+   @repo    https://github.com/ajbuter/AJBPhotographyWebPage
+=========================================================================== */
+
+/* ===========================================================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ---------------------------------------------------------------------------
+   All colors, shadows, and borders are defined here as CSS variables.
+   Updating a value here propagates the change across the entire stylesheet.
+   The primary palette is cyan (#38f2f5) on off-white/charcoal.
+=========================================================================== */
+:root {
+  --cyan:       #38f2f5;        /* Primary accent — cyan */
+  --cyan-dark:  #1dd6d9;        /* Darker cyan for text, links, labels */
+  --cyan-pale:  #e8fffe;        /* Very light cyan for backgrounds, tags */
+  --cyan-mid:   #b0f7f8;        /* Mid-tone cyan for subtle highlights */
+  --white:      #ffffff;
+  --off-white:  #f7fefe;        /* Site background — slightly cyan-tinted white */
+  --charcoal:   #1a2a2b;        /* Primary dark color for text and backgrounds */
+  --slate:      #3d5557;        /* Secondary text / nav links */
+  --muted:      #7a9fa1;        /* Placeholder, meta, subdued text */
+  --border:     rgba(56,242,245,0.2);               /* Subtle cyan-tinted borders */
+  --shadow:     0 4px 32px rgba(56,242,245,0.12);   /* Soft card shadow */
+  --shadow-lg:  0 16px 64px rgba(56,242,245,0.18);  /* Elevated card shadow */
+}
+
+/* Global box-sizing reset — prevents width/padding conflicts */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--off-white);
+  color: var(--charcoal);
+  overflow-x: hidden; /* Prevent horizontal scroll from animated elements */
+  min-height: 100vh;
+}
+
+/* ===========================================================================
+   NAVIGATION BAR
+   ---------------------------------------------------------------------------
+   Fixed at the top of the viewport. Uses backdrop-filter blur for a
+   frosted-glass effect. Gains a box-shadow when the user scrolls down
+   (toggled via JS by adding the "scrolled" class).
+=========================================================================== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 3rem;
+  height: 72px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+
+/* Shadow added via JavaScript when window.scrollY > 20 */
+nav.scrolled { box-shadow: var(--shadow); }
+
+/* Logo — "AJB." with the period highlighted in cyan */
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 3px;
+  color: var(--charcoal);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--cyan-dark); }
+
+/* Desktop navigation links */
+.nav-links {
+  display: flex; align-items: center; gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+
+/* Animated underline that slides in on hover */
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 0; height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+.nav-links a:hover { color: var(--charcoal); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* Instagram CTA button in the nav */
+.nav-instagram {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  background: var(--cyan);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.nav-instagram:hover { background: var(--cyan-dark); transform: translateY(-1px); }
+
+/* Hamburger menu icon — hidden on desktop, shown on mobile */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--charcoal); transition: all 0.3s; }
+
+/* ===========================================================================
+   HERO SECTION
+   ---------------------------------------------------------------------------
+   Full-viewport-height section with a layered background:
+     1. Gradient base layer (.hero-bg)
+     2. Subtle grid overlay (.hero-grid)
+     3. Radial glow circles (.hero-circle)
+     4. Centered text content (.hero-content)
+   Content animates in on load with staggered delays via @keyframes heroReveal.
+=========================================================================== */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: 72px; /* Offset for fixed nav height */
+}
+
+/* Soft gradient base — very light cyan wash */
+.hero-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #e8fffe 0%, #f0fefe 40%, #c8f9fa 100%);
+}
+
+/* Subtle repeating grid lines for texture */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(56,242,245,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,242,245,0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Large radial glow orbs — decorative depth effect */
+.hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56,242,245,0.25) 0%, transparent 70%);
+}
+.hero-circle-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+.hero-circle-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; }
+
+/* Hero text container — animates in from below */
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 2rem;
+  animation: heroReveal 1s ease both;
+}
+
+/* Shared entrance animation — slides up from 40px below with fade */
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Small label above the title — e.g. "Missouri S&T Sports Photography" */
+.hero-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--cyan-dark);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  animation: heroReveal 1s 0.1s ease both; /* 0.1s stagger */
+}
+
+/* Main headline — large serif font, italic colored emphasis */
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(4rem, 10vw, 9rem); /* Fluid type: scales with viewport */
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -2px;
+  color: var(--charcoal);
+  margin-bottom: 1.5rem;
+  animation: heroReveal 1s 0.2s ease both;
+}
+.hero-title em { font-style: italic; color: var(--cyan-dark); }
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 300;
+  max-width: 400px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  animation: heroReveal 1s 0.3s ease both;
+}
+
+/* CTA button row */
+.hero-ctas {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  flex-wrap: wrap;
+  animation: heroReveal 1s 0.4s ease both;
+}
+
+/* Scroll indicator — animated line that pulses */
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+  animation: heroReveal 1s 0.6s ease both;
+}
+.hero-scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--cyan), transparent);
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50%       { opacity: 0.4; transform: scaleY(0.7); }
+}
+
+/* ===========================================================================
+   SHARED SECTION / LAYOUT UTILITIES
+=========================================================================== */
+section { padding: 6rem 0; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 3rem; }
+
+/* Small all-caps label above section titles */
+.section-label {
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--cyan-dark);
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* Large serif section heading with optional italic em for accent */
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--charcoal);
+  margin-bottom: 1rem;
+}
+.section-title em { font-style: italic; color: var(--cyan-dark); }
+
+/* ===========================================================================
+   CATEGORY GRID (Home Page — "Explore the Collection")
+   ---------------------------------------------------------------------------
+   Four category cards in a responsive grid. The Sports card spans two columns
+   on desktop to give it visual priority.
+   Each card has: background gradient, dot pattern overlay, hover overlay,
+   and bottom-aligned info text.
+=========================================================================== */
+#work { background: var(--white); }
+
+.categories-grid {
+  display: grid;
+  gap: 1.5px;
+}
+
+.categories-grid--single {
+  grid-template-columns: 1fr;
+  margin-top: 3rem;
+}
+.categories-grid--single .cat-card {
+  grid-column: unset;
+  aspect-ratio: unset;
+  min-height: 420px;
+}
+
+.categories-grid--three {
+  grid-template-columns: repeat(4, 1fr);
+}
+.categories-grid--three .cat-card {
+  aspect-ratio: 4/5;
+}
+
+.personal-work-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--charcoal);
+  letter-spacing: 2px;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5px;
+}
+.personal-work-label em { font-style: italic; color: var(--cyan-dark); }
+
+.cat-card {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--cyan-pale);
+  display: flex; align-items: flex-end;
+  transition: transform 0.4s;
+}
+.cat-card:hover { transform: scale(0.99); }
+.cat-card:hover .cat-overlay { opacity: 1; }
+.cat-card:hover .cat-bg { transform: scale(1.05); }
+
+/* Background layer — can be gradient or a real image via background-image */
+.cat-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: transform 0.6s ease;
+}
+
+/* Category-specific gradients — fallback visuals until real photos are set */
+.cat-bg-sports   { background: linear-gradient(135deg, #0a1a2e 0%, #1a3a5c 50%, #1dd6d9 100%); }
+.cat-bg-auto     { background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 50%, #38f2f5 100%); }
+.cat-bg-portrait { background: linear-gradient(135deg, #2a1a0e 0%, #5c3a1a 50%, #f5d038 100%); }
+.cat-bg-env      { background: linear-gradient(135deg, #0a2e1a 0%, #1a5c3a 50%, #38f5a0 100%); }
+.cat-bg-events   { background: linear-gradient(135deg, #1a0a2e 0%, #3a1a5c 50%, #c038f5 100%); }
+
+/* Subtle dot grid overlay for texture */
+.cat-pattern {
+  position: absolute; inset: 0; opacity: 0.15;
+  background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.4) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Semi-transparent cyan tint overlay that fades in on hover */
+.cat-overlay {
+  position: absolute; inset: 0;
+  background: rgba(56,242,245,0.15);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+/* Card info block — overlaid at the bottom of each card */
+.cat-info {
+  position: relative; z-index: 2;
+  padding: 2rem;
+  color: var(--white);
+}
+.cat-icon  { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); }
+.cat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 3px; display: block; }
+.cat-count { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan-mid); margin-top: 4px; display: block; }
+
+/* Circular arrow indicator — turns cyan on card hover */
+.cat-arrow {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  font-size: 1rem;
+  margin-top: 0.75rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.cat-card:hover .cat-arrow { background: var(--cyan); border-color: var(--cyan); color: var(--charcoal); }
+
+/* ===========================================================================
+   PAGE SYSTEM — SPA Routing
+   ---------------------------------------------------------------------------
+   Three pages exist in the DOM simultaneously. Only the active one is shown.
+   Page switches are handled by JS functions: showHome(), showCategory(),
+   showAlbum(). The .active class controls visibility.
+=========================================================================== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Shared page header — used by category and album pages */
+.page-header {
+  background: var(--white);
+  padding: 6rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+  margin-top: 72px; /* Offset for fixed nav */
+}
+
+/* Breadcrumb navigation — "Home › Sports › Album Name" */
+.breadcrumb {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+.breadcrumb a { color: var(--cyan-dark); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* Sport filter pill tabs — shown only in the Sports category */
+.sport-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.sport-tab {
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: transparent; color: var(--slate);
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.sport-tab:hover { border-color: var(--cyan); color: var(--charcoal); }
+.sport-tab.active { background: var(--cyan); border-color: var(--cyan); color: var(--charcoal); }
+
+/* ===========================================================================
+   ALBUMS GRID (Category Page)
+   ---------------------------------------------------------------------------
+   Auto-filling grid of album cards. Each card shows a cover thumbnail,
+   title, metadata, tags, and action buttons (Share, View).
+=========================================================================== */
+.albums-section { padding: 3rem 0 6rem; }
+
+.albums-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+}
+.albums-count { font-size: 0.8rem; color: var(--muted); }
+
+.albums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Individual album card */
+.album-card {
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.album-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+/* Cover image area — 4:3 aspect ratio, zooms on card hover */
+.album-thumb {
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, var(--cyan-pale), var(--cyan-mid));
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.album-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.album-card:hover .album-thumb img { transform: scale(1.05); }
+.album-thumb-placeholder { font-size: 3rem; opacity: 0.4; }
+
+/* Photo count badge overlaid on thumbnail */
+.album-thumb-count {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(0,0,0,0.6); color: var(--white);
+  font-size: 0.7rem; padding: 4px 10px;
+  border-radius: 100px; letter-spacing: 0.5px;
+}
+
+.album-info    { padding: 1.25rem; }
+.album-title   { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.4rem; }
+.album-meta    { display: flex; align-items: center; gap: 0.75rem; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.75rem; flex-wrap: wrap; }
+
+/* Small pill tag — sport type, category keywords */
+.album-tag {
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--cyan-pale); color: var(--cyan-dark);
+  font-size: 0.65rem; font-weight: 500; letter-spacing: 0.5px;
+  border: 1px solid var(--border);
+}
+.album-actions { display: flex; gap: 0.5rem; }
+
+/* ===========================================================================
+   BUTTON STYLES
+=========================================================================== */
+
+/* Full-size primary button — dark fill, white text */
+.btn-primary {
+  padding: 14px 32px;
+  background: var(--charcoal); color: var(--white);
+  border-radius: 4px;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-primary:hover { background: var(--slate); transform: translateY(-2px); }
+
+/* Ghost/outline secondary button */
+.btn-secondary {
+  padding: 14px 32px;
+  background: transparent; color: var(--charcoal);
+  border-radius: 4px;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+  text-decoration: none;
+  border: 1.5px solid var(--charcoal);
+  transition: all 0.2s;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-secondary:hover { background: var(--charcoal); color: var(--white); transform: translateY(-2px); }
+
+/* Small compact button — used inside album cards and album page header */
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.7rem; letter-spacing: 0.5px;
+  border-radius: 4px; border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-share { background: var(--cyan-pale); color: var(--cyan-dark); border: 1px solid var(--border); }
+.btn-share:hover { background: var(--cyan); color: var(--charcoal); }
+.btn-view  { background: var(--charcoal); color: var(--white); }
+.btn-view:hover { background: var(--slate); }
+
+/* ===========================================================================
+   LIGHTBOX
+   ---------------------------------------------------------------------------
+   Full-screen photo viewer. Activated by clicking any photo in the album grid.
+   Supports keyboard navigation (← → Esc) and a download button.
+=========================================================================== */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 9000;
+  background: rgba(10,20,22,0.97);
+  align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.lightbox.open { display: flex; }
+
+.lightbox-img-wrap {
+  position: relative;
+  max-width: 90vw; max-height: 85vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox-img {
+  max-width: 90vw; max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 32px 100px rgba(0,0,0,0.8);
+}
+
+/* Close button — top-right corner */
+.lightbox-close {
+  position: fixed; top: 1.5rem; right: 1.5rem;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: var(--white); font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.lightbox-close:hover { background: rgba(56,242,245,0.3); }
+
+/* Previous / Next navigation buttons */
+.lightbox-nav {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: var(--white); font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.lightbox-nav:hover { background: rgba(56,242,245,0.3); }
+.lightbox-prev { left: 1.5rem; }
+.lightbox-next { right: 1.5rem; }
+
+/* Caption and download link row below the image */
+.lightbox-footer {
+  display: flex; align-items: center; gap: 2rem;
+  margin-top: 1.5rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.8rem;
+}
+.lightbox-caption { letter-spacing: 1px; }
+.btn-download {
+  padding: 8px 20px;
+  background: rgba(56,242,245,0.15);
+  color: var(--cyan);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+.btn-download:hover { background: rgba(56,242,245,0.3); }
+
+/* ===========================================================================
+   ALBUM VIEW PAGE
+=========================================================================== */
+.album-view-header {
+  background: var(--white);
+  padding: 5rem 0 2.5rem;
+  margin-top: 72px;
+  border-bottom: 1px solid var(--border);
+}
+.album-view-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+
+/* Photo grid — auto-fills, 280px minimum column width */
+.album-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px;
+  padding: 3rem 0;
+}
+
+/* Individual photo tile — aspect ratio locked, zoom on hover */
+.photo-item {
+  aspect-ratio: 4/3;
+  overflow: hidden; cursor: pointer; position: relative;
+  background: var(--cyan-pale); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.photo-item:hover img { transform: scale(1.05); }
+
+/* Cyan overlay with expand icon — fades in on hover */
+.photo-item-overlay {
+  position: absolute; inset: 0;
+  background: rgba(56,242,245,0.1);
+  opacity: 0; transition: opacity 0.3s;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-item:hover .photo-item-overlay { opacity: 1; }
+.photo-item-overlay-icon { font-size: 2rem; color: var(--white); }
+.photo-placeholder-icon  { font-size: 3rem; opacity: 0.2; }
+.photo-remove {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(10,20,22,0.72); color: var(--white);
+  cursor: pointer; font-size: 0.8rem;
+  display: none; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.photo-item:hover .photo-remove { display: flex; }
+.photo-remove:hover { background: #e5484d; transform: scale(1.05); }
+
+/* ===========================================================================
+   ADMIN PANEL
+   ---------------------------------------------------------------------------
+   Full-screen modal overlay with backdrop blur. Contains two tabs:
+     Tab 1 — "New Album": Name, category, sport, date, tags, cover upload
+     Tab 2 — "Add Photos": File upload, URL paste, or Lightroom hint
+   Only rendered/accessible to local network users.
+=========================================================================== */
+.admin-panel {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(10,20,22,0.85);
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.admin-panel.open { display: flex; }
+
+.admin-modal {
+  background: var(--white);
+  border-radius: 16px;
+  width: 90%; max-width: 640px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+}
+.admin-modal-header {
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.admin-modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--charcoal); }
+.admin-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.admin-close:hover { background: var(--cyan-pale); }
+.admin-body { padding: 1.5rem 2rem 2rem; }
+
+/* Form field styles shared across the admin panel */
+.form-group { margin-bottom: 1.25rem; }
+.form-label {
+  display: block; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--slate); margin-bottom: 6px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  color: var(--charcoal); background: var(--off-white);
+  transition: border-color 0.2s; outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--cyan); background: var(--white);
+}
+.form-textarea { min-height: 80px; resize: vertical; }
+
+/* Dashed upload drop zone */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 2.5rem; text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--cyan); background: var(--cyan-pale); }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-zone-icon { font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--cyan-dark); }
+.upload-zone-text { font-size: 0.85rem; color: var(--slate); }
+.upload-zone-text strong { color: var(--charcoal); }
+
+/* Grid of pending upload thumbnails with remove buttons */
+.upload-preview {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-top: 1rem;
+}
+.upload-preview-item {
+  aspect-ratio: 1; border-radius: 6px; overflow: hidden;
+  position: relative; background: var(--cyan-pale);
+}
+.upload-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+.upload-preview-remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); color: var(--white);
+  font-size: 0.65rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none;
+}
+.edit-cover-preview {
+  margin-top: 0.75rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--cyan-pale);
+}
+.edit-cover-preview img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  display: block;
+}
+.edit-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+.edit-photo-item {
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--cyan-pale);
+}
+.edit-photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.edit-photo-actions {
+  position: absolute; inset: auto 4px 4px 4px;
+  display: flex; gap: 4px;
+}
+.edit-photo-actions button {
+  flex: 1;
+  border: none; border-radius: 4px;
+  background: rgba(10,20,22,0.78); color: var(--white);
+  font-size: 0.65rem; padding: 5px 4px;
+  cursor: pointer;
+}
+.edit-photo-actions button:hover { background: var(--charcoal); }
+.btn-danger {
+  background: #e5484d;
+  color: var(--white);
+}
+.btn-danger:hover { background: #c9383d; }
+
+/* Tab buttons used in admin panel (New Album / Add Photos) */
+.admin-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.admin-tab {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.admin-tab.active { color: var(--charcoal); border-bottom-color: var(--cyan); }
+.admin-tab-content        { display: none; }
+.admin-tab-content.active { display: block; }
+
+/* Lightroom import instructions hint box */
+.lightroom-hint {
+  background: var(--cyan-pale); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem;
+  font-size: 0.8rem; color: var(--slate); line-height: 1.6; margin-bottom: 1rem;
+}
+.lightroom-hint strong { color: var(--charcoal); display: block; margin-bottom: 4px; }
+
+/* ===========================================================================
+   ABOUT SECTION
+=========================================================================== */
+#about { background: var(--charcoal); color: var(--white); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+.about-visual { position: relative; }
+
+/* Placeholder image frame with AJB watermark text */
+.about-img-frame {
+  aspect-ratio: 3/4; border-radius: 4px;
+  background: linear-gradient(135deg, #1dd6d9 0%, #0a6b6c 50%, #1a2a2b 100%);
+  position: relative; overflow: hidden;
+}
+.about-img-frame::after {
+  content: 'AJB';
+  position: absolute; bottom: 1.5rem; right: 1.5rem;
+  font-family: 'Bebas Neue', sans-serif; font-size: 5rem;
+  color: rgba(255,255,255,0.08); letter-spacing: 4px;
+}
+
+/* Decorative border offset behind the image frame */
+.about-deco {
+  position: absolute; bottom: -1.5rem; left: -1.5rem;
+  width: 100px; height: 100px;
+  border: 2px solid var(--cyan); border-radius: 4px;
+}
+
+.about-label  { color: var(--cyan); margin-bottom: 0.75rem; }
+.about-title  { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 300; line-height: 1.1; margin-bottom: 1.5rem; color: var(--white); }
+.about-title em { font-style: italic; color: var(--cyan); }
+.about-bio { font-size: 0.95rem; line-height: 1.9; color: rgba(255,255,255,0.65); margin-bottom: 1.5rem; }
+
+/* Stats row — albums count, photos count, categories */
+.about-stats { display: flex; gap: 2rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.about-stat-num   { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 2px; color: var(--cyan); display: block; }
+.about-stat-label { font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+/* ===========================================================================
+   CONTACT SECTION
+=========================================================================== */
+#contact { background: var(--white); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+
+.contact-info-item { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
+.contact-icon {
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 8px;
+  background: var(--cyan-pale); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.contact-info-text strong { display: block; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; color: var(--charcoal); }
+.contact-info-text span   { font-size: 0.9rem; color: var(--muted); }
+.contact-info-text a { color: var(--cyan-dark); text-decoration: none; }
+.contact-info-text a:hover { text-decoration: underline; }
+.contact-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* ===========================================================================
+   FOOTER
+=========================================================================== */
+footer {
+  background: var(--charcoal);
+  color: rgba(255,255,255,0.5);
+  padding: 3rem 0; text-align: center;
+  font-size: 0.75rem; letter-spacing: 0.5px;
+}
+footer strong { color: var(--cyan); }
+
+/* ===========================================================================
+   FLOATING ADMIN BUTTON
+   ---------------------------------------------------------------------------
+   Fixed bottom-right gear icon. Only visible to local network users —
+   hidden for external visitors via JavaScript on page load.
+=========================================================================== */
+.admin-btn-float {
+  position: fixed; bottom: 2rem; right: 2rem;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--charcoal); border: 2px solid var(--cyan); color: var(--cyan);
+  font-size: 1.3rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s, background 0.2s;
+  z-index: 900;
+}
+.admin-btn-float:hover { transform: rotate(15deg) scale(1.1); background: var(--slate); }
+
+/* ===========================================================================
+   TOAST NOTIFICATION
+   ---------------------------------------------------------------------------
+   Slides up from the bottom to confirm actions (album created, link copied).
+   Shown by showToast(message), auto-hides after 3 seconds.
+=========================================================================== */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(100px); /* Hidden state — off-screen below */
+  background: var(--charcoal); color: var(--white);
+  padding: 14px 24px; border-radius: 8px;
+  font-size: 0.85rem; border: 1px solid var(--cyan);
+  z-index: 9999; transition: transform 0.3s; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); } /* Visible state */
+
+/* ===========================================================================
+   EMPTY STATE
+   ---------------------------------------------------------------------------
+   Shown inside the albums or photos grid when there is no content yet.
+=========================================================================== */
+.empty-state { text-align: center; padding: 5rem 2rem; color: var(--muted); }
+.empty-state-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+.empty-state-text { font-size: 0.9rem; }
+
+/* ===========================================================================
+   RESPONSIVE BREAKPOINTS
+=========================================================================== */
+
+/* Tablet — collapse to 2-column grid, hide about visual, stack contact */
+@media (max-width: 900px) {
+  .categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .cat-card:first-child { grid-column: span 2; }
+  .about-grid, .contact-grid { grid-template-columns: 1fr; }
+  .about-visual { display: none; }
+  nav { padding: 0 1.5rem; }
+  .container { padding: 0 1.5rem; }
+  nav ul { display: none; } /* Hide desktop nav links, show hamburger */
+  .hamburger { display: flex; }
+  .nav-instagram { display: none; }
+}
+
+/* Mobile — single column, stack contact form rows */
+@media (max-width: 600px) {
+  .categories-grid { grid-template-columns: 1fr; }
+  .cat-card:first-child { grid-column: span 1; }
+  .contact-form .form-row { grid-template-columns: 1fr; }
+  .upload-preview { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ===========================================================================
+   MOBILE NAVIGATION OVERLAY
+   ---------------------------------------------------------------------------
+   Full-screen slide-in nav menu for mobile viewports.
+   Toggled by the hamburger button via toggleMobile() JS function.
+=========================================================================== */
+.mobile-nav {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--white);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+  transform: translateX(100%); /* Hidden to the right */
+  transition: transform 0.35s ease;
+}
+.mobile-nav.open { transform: translateX(0); }
+.mobile-nav a {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem; color: var(--charcoal); text-decoration: none; font-style: italic;
+}
+.mobile-nav-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--charcoal);
+}
