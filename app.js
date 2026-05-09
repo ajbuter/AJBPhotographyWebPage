@@ -73,14 +73,8 @@ let pendingPhotoDataUrls = [];
 /** Which photo input tab is active: "upload" | "url" | "lightroom" */
 let currentPhotoTab = 'upload';
 
-/** Pending cover URL for the edit-album flow */
-let pendingEditCoverUrl = null;
-
-/** Pending additional photo URLs for the edit-album flow */
-let pendingEditMorePhotoUrls = [];
-
-/** Set of photo IDs marked for removal in the edit-album flow */
-let pendingEditRemovals = new Set();
+/** Whether the current visitor is on the local network (set during init) */
+let isAdmin = false;
 
 // -----------------------------------------------------------------------------
 // DATABASE — Server-synced persistence via REST API
@@ -293,7 +287,7 @@ function renderAlbumsGrid() {
         <div style="margin-bottom:0.75rem;">${tags}</div>
         <div class="album-actions">
           <button class="btn-sm btn-share" onclick="event.stopPropagation();shareAlbumById('${a.id}')">🔗 Share</button>
-          <button class="btn-sm btn-edit-album" onclick="event.stopPropagation();openAdminEditAlbum('${a.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn-sm btn-edit-album" onclick="event.stopPropagation();openAdminEditAlbum('${a.id}')">✏️ Edit</button>` : ''}
           <button class="btn-sm btn-view">View Album →</button>
         </div>
       </div>
@@ -444,7 +438,6 @@ function openAdmin(tab) {
   document.body.style.overflow = 'hidden';
   switchAdminTab(tab);
   populateAlbumSelect();
-  populateEditAlbumSelect();
 
   // Pre-select the current category in the New Album form
   if (currentCategory) {
@@ -458,12 +451,6 @@ function openAdmin(tab) {
     const sel = document.getElementById('photoAlbumSelect');
     if (sel) sel.value = currentAlbumId;
   }
-
-  // If opening the edit tab, pre-select and load the current album
-  if (tab === 'edit' && currentAlbumId) {
-    const sel = document.getElementById('editAlbumSelect');
-    if (sel) { sel.value = currentAlbumId; loadAlbumForEdit(); }
-  }
 }
 
 /**
@@ -474,14 +461,8 @@ function closeAdmin() {
   document.body.style.overflow = '';
   pendingCoverDataUrl  = null;
   pendingPhotoDataUrls = [];
-  pendingEditMorePhotoUrls = [];
-  pendingEditCoverUrl = null;
   document.getElementById('uploadPreview').innerHTML        = '';
   document.getElementById('coverPreviewWrap').style.display = 'none';
-  const ep = document.getElementById('editUploadPreview');
-  if (ep) ep.innerHTML = '';
-  const ef = document.getElementById('editAlbumFields');
-  if (ef) ef.style.display = 'none';
 }
 
 /**
@@ -489,13 +470,12 @@ function closeAdmin() {
  * @param {string} tab - "album" | "photos"
  */
 function switchAdminTab(tab) {
-  const tabs = ['album', 'photos', 'edit'];
   document.querySelectorAll('.admin-tab').forEach((t, i) => {
+    const tabs = ['album', 'photos'];
     t.classList.toggle('active', tabs[i] === tab);
   });
   document.getElementById('tabAlbum').classList.toggle('active',  tab === 'album');
   document.getElementById('tabPhotos').classList.toggle('active', tab === 'photos');
-  document.getElementById('tabEdit').classList.toggle('active',   tab === 'edit');
 }
 
 /**
@@ -719,307 +699,6 @@ async function addPhotosToAlbum() {
 }
 
 // -----------------------------------------------------------------------------
-// ALBUM EDITING
-// -----------------------------------------------------------------------------
-
-/**
- * Opens the admin panel directly on the Edit Album tab for a specific album.
- * Called from the Edit button on album cards in the grid.
- * @param {string} albumId
- */
-function openAdminEditAlbum(albumId) {
-  currentAlbumId = albumId;
-  openAdmin('edit');
-}
-
-/**
- * Populates the album selector in the Edit Album tab.
- */
-function populateEditAlbumSelect() {
-  const sel = document.getElementById('editAlbumSelect');
-  if (!sel) return;
-  sel.innerHTML = db.albums.length === 0
-    ? '<option value="">— No albums yet —</option>'
-    : '<option value="">— Select an album —</option>' +
-      db.albums.map(a => `<option value="${a.id}">${a.name} (${a.category})</option>`).join('');
-}
-
-/**
- * Loads the selected album's data into the edit form fields.
- * Called when the editAlbumSelect dropdown changes.
- */
-function loadAlbumForEdit() {
-  const albumId = document.getElementById('editAlbumSelect').value;
-  const fields  = document.getElementById('editAlbumFields');
-
-  // Reset pending state whenever a different album is loaded
-  pendingEditCoverUrl       = null;
-  pendingEditMorePhotoUrls  = [];
-  pendingEditRemovals       = new Set();
-  const ep = document.getElementById('editUploadPreview');
-  if (ep) ep.innerHTML = '';
-
-  if (!albumId) { fields.style.display = 'none'; return; }
-
-  const album = db.albums.find(a => a.id === albumId);
-  if (!album) { fields.style.display = 'none'; return; }
-
-  // Populate form fields
-  document.getElementById('editAlbumName').value     = album.name;
-  document.getElementById('editAlbumCategory').value = album.category;
-  document.getElementById('editAlbumDate').value     = album.date || '';
-  document.getElementById('editAlbumTags').value     = (album.tags || []).join(', ');
-
-  toggleEditSportGroup();
-  if (album.sport) {
-    const sportSel = document.getElementById('editAlbumSport');
-    if (sportSel) sportSel.value = album.sport;
-  }
-
-  // Current cover thumbnail
-  const coverImg = document.getElementById('editCoverCurrentImg');
-  if (album.cover) {
-    coverImg.src                                        = album.cover;
-    document.getElementById('editCoverCurrentWrap').style.display = 'block';
-  } else {
-    document.getElementById('editCoverCurrentWrap').style.display = 'none';
-  }
-
-  renderEditPhotosGrid(album);
-  fields.style.display = 'block';
-}
-
-/**
- * Shows/hides the Sport selector in the edit form based on selected category.
- */
-function toggleEditSportGroup() {
-  const cat = document.getElementById('editAlbumCategory').value;
-  document.getElementById('editSportTypeGroup').style.display = cat === 'sports' ? 'block' : 'none';
-}
-
-/**
- * Renders the photo management grid in the edit form.
- * Each photo tile has:
- *   - A "✕ Remove" overlay to queue it for deletion
- *   - A "⭐ Cover" overlay to set it as the album cover
- * Removed photos are shown dimmed with strikethrough.
- *
- * @param {Object} album
- */
-function renderEditPhotosGrid(album) {
-  const grid   = document.getElementById('editPhotosGrid');
-  const photos = album.photos || [];
-
-  document.getElementById('editPhotoCount').textContent =
-    `— ${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
-
-  if (photos.length === 0) {
-    grid.innerHTML = `<p style="color:var(--muted);font-size:0.82rem;">No photos in this album yet.</p>`;
-    return;
-  }
-
-  grid.innerHTML = photos.map(p => {
-    const removed = pendingEditRemovals.has(p.id);
-    const isCover = (pendingEditCoverUrl || album.cover) === p.url;
-    return `
-    <div class="edit-photo-tile ${removed ? 'edit-photo-removed' : ''}">
-      <img src="${p.url.replace('upload','thumb')}" alt="" loading="lazy">
-      ${isCover ? '<div class="edit-photo-badge">★ Cover</div>' : ''}
-      <div class="edit-photo-actions">
-        ${!removed
-          ? `<button class="edit-photo-btn edit-photo-btn--remove" onclick="toggleEditRemove('${p.id}')" title="Remove photo">✕</button>
-             <button class="edit-photo-btn edit-photo-btn--cover"  onclick="setEditCover('${p.url}')"   title="Set as cover">★</button>`
-          : `<button class="edit-photo-btn edit-photo-btn--undo"   onclick="toggleEditRemove('${p.id}')" title="Undo remove">↩</button>`
-        }
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/**
- * Toggles a photo's removal state in the pending removals set.
- * Re-renders the grid to reflect the change visually.
- * @param {string} photoId
- */
-function toggleEditRemove(photoId) {
-  if (pendingEditRemovals.has(photoId)) {
-    pendingEditRemovals.delete(photoId);
-  } else {
-    pendingEditRemovals.add(photoId);
-  }
-  const albumId = document.getElementById('editAlbumSelect').value;
-  const album   = db.albums.find(a => a.id === albumId);
-  if (album) renderEditPhotosGrid(album);
-}
-
-/**
- * Stages a photo URL as the new album cover (edit flow).
- * Updates the cover preview thumbnail immediately.
- * @param {string} url
- */
-function setEditCover(url) {
-  pendingEditCoverUrl = url;
-  document.getElementById('editCoverCurrentImg').src              = url;
-  document.getElementById('editCoverCurrentWrap').style.display  = 'block';
-  // Re-render grid so ★ Cover badge moves to the new cover
-  const albumId = document.getElementById('editAlbumSelect').value;
-  const album   = db.albums.find(a => a.id === albumId);
-  if (album) renderEditPhotosGrid(album);
-  showToast('Cover updated — save to apply.');
-}
-
-/**
- * Handles new cover upload in the edit flow.
- * Uploads to /api/upload, stores URL, updates preview.
- * @param {Event} e
- */
-async function handleEditCoverUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('photos', file);
-
-  const res  = await fetch('/api/upload', { method: 'POST', body: formData });
-  const data = await res.json();
-
-  pendingEditCoverUrl = data.urls[0];
-  document.getElementById('editCoverCurrentImg').src             = pendingEditCoverUrl;
-  document.getElementById('editCoverCurrentWrap').style.display = 'block';
-  showToast('Cover image uploaded — save to apply.');
-}
-
-/**
- * Handles additional photo uploads in the edit flow.
- * Uploads each file individually and populates the pending preview strip.
- * @param {Event} e
- */
-async function handleEditMorePhotos(e) {
-  const files   = Array.from(e.target.files);
-  const preview = document.getElementById('editUploadPreview');
-
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append('photos', file);
-
-    const res  = await fetch('/api/upload', { method: 'POST', body: formData });
-    const data = await res.json();
-
-    data.urls.forEach(url => {
-      pendingEditMorePhotoUrls.push(url);
-      const idx  = pendingEditMorePhotoUrls.length - 1;
-      const item = document.createElement('div');
-      item.className = 'upload-preview-item';
-      item.innerHTML = `
-        <img src="${url}" alt="">
-        <button class="upload-preview-remove" onclick="removeEditPendingPhoto(${idx}, this.parentElement)">✕</button>`;
-      preview.appendChild(item);
-    });
-  }
-}
-
-/**
- * Removes a photo from the pending-add queue in the edit flow.
- * @param {number} idx
- * @param {HTMLElement} el
- */
-function removeEditPendingPhoto(idx, el) {
-  pendingEditMorePhotoUrls[idx] = null;
-  el.remove();
-}
-
-/**
- * Commits all staged edit-album changes to the database and saves to server.
- * Operations applied in order:
- *   1. Update name, category, sport, date, tags
- *   2. Apply new cover (uploaded file or photo tile pick)
- *   3. Remove marked photos
- *   4. Append newly uploaded photos
- *   5. Auto-fix cover if the old cover was removed
- */
-async function saveAlbumEdits() {
-  const albumId = document.getElementById('editAlbumSelect').value;
-  if (!albumId) { showToast('No album selected.'); return; }
-
-  const album = db.albums.find(a => a.id === albumId);
-  if (!album) return;
-
-  const name     = document.getElementById('editAlbumName').value.trim();
-  if (!name) { showToast('Album name cannot be empty.'); return; }
-
-  const category = document.getElementById('editAlbumCategory').value;
-  const sport    = category === 'sports' ? document.getElementById('editAlbumSport').value : null;
-  const date     = document.getElementById('editAlbumDate').value;
-  const tagsRaw  = document.getElementById('editAlbumTags').value;
-  const tags     = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-
-  // 1. Core metadata
-  album.name     = name;
-  album.category = category;
-  album.sport    = sport;
-  album.date     = date;
-  album.tags     = tags;
-
-  // 2. Cover
-  if (pendingEditCoverUrl) album.cover = pendingEditCoverUrl;
-
-  // 3. Remove marked photos
-  if (pendingEditRemovals.size > 0) {
-    album.photos = (album.photos || []).filter(p => !pendingEditRemovals.has(p.id));
-  }
-
-  // 4. Add new photos
-  const newPhotos = pendingEditMorePhotoUrls.filter(Boolean);
-  newPhotos.forEach(url => album.photos.push({ id: 'p_' + Date.now() + Math.random(), url }));
-
-  // 5. Fix cover if it was removed or never set
-  const photoUrls = (album.photos || []).map(p => p.url);
-  if (!album.cover || !photoUrls.includes(album.cover)) {
-    album.cover = photoUrls[0] || null;
-  }
-
-  await saveDb();
-  closeAdmin();
-  showToast(`Album "${album.name}" updated!`);
-
-  // Re-render whichever view is currently active
-  if (currentAlbumId === albumId) renderAlbumPage();
-  if (document.getElementById('categoryPage').classList.contains('active')) renderAlbumsGrid();
-  updateStats();
-  updateCounts();
-}
-
-/**
- * Deletes the currently selected album after a confirmation prompt.
- * Removes it from db.albums, saves to server, and navigates back.
- */
-async function deleteAlbum() {
-  const albumId = document.getElementById('editAlbumSelect').value;
-  if (!albumId) return;
-
-  const album = db.albums.find(a => a.id === albumId);
-  if (!album) return;
-
-  if (!confirm(`Delete "${album.name}"?\n\nThis will permanently remove the album and all its photo references. Uploaded image files on disk are not deleted.`)) return;
-
-  db.albums = db.albums.filter(a => a.id !== albumId);
-
-  await saveDb();
-  closeAdmin();
-  showToast(`Album "${album.name}" deleted.`);
-
-  // Navigate away from the deleted album if we're on it
-  if (currentAlbumId === albumId) {
-    currentAlbumId = null;
-    showCategory(album.category);
-  } else if (document.getElementById('categoryPage').classList.contains('active')) {
-    renderAlbumsGrid();
-  }
-  updateStats();
-  updateCounts();
-}
-
-// -----------------------------------------------------------------------------
 // SHARING — Copyable album links via URL hash routing
 // -----------------------------------------------------------------------------
 
@@ -1158,10 +837,11 @@ document.addEventListener('error', function(e) {
 
   // Step 2 — Ask server if this visitor is on the local network
   const { admin } = await fetch('/api/is-admin').then(r => r.json());
+  isAdmin = admin;
 
   if (!admin) {
-    // External visitor — hide all admin controls (buttons with openAdmin in onclick)
-    document.querySelectorAll('[onclick*="openAdmin"], [onclick*="Admin"], [onclick*="openAdminEditAlbum"]')
+    // External visitor — hide static admin controls present at page load
+    document.querySelectorAll('[onclick*="openAdmin"], [onclick*="Admin"]')
       .forEach(el => el.style.display = 'none');
   }
 
