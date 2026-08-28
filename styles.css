@@ -29,7 +29,10 @@
 /* Global box-sizing reset — prevents width/padding conflicts */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth; 
+  overflow-x: hidden;
+}
 
 body {
   font-family: 'DM Sans', sans-serif;
@@ -549,7 +552,7 @@ section { padding: 6rem 0; }
 
 /* Close button — top-right corner */
 .lightbox-close {
-  position: fixed; top: 1.5rem; right: 1.5rem;
+  position: absolute; top: 1.5rem; right: 1.5rem;
   width: 44px; height: 44px; border-radius: 50%;
   background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
   color: var(--white); font-size: 1.2rem; cursor: pointer;
@@ -560,7 +563,7 @@ section { padding: 6rem 0; }
 
 /* Previous / Next navigation buttons */
 .lightbox-nav {
-  position: fixed; top: 50%; transform: translateY(-50%);
+  position: absolute; top: 50%; transform: translateY(-50%);
   width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
   color: var(--white); font-size: 1.2rem; cursor: pointer;
