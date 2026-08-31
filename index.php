@@ -4,7 +4,7 @@
   AJB Photographs — Portfolio Front-End
   =============================================================================
 
-  @file        index.html
+  @file        index.php
   @project     AJBPhotographyWebPage
   @repository  https://github.com/ajbuter/AJBPhotographyWebPage
   @author      Aiden Buter
