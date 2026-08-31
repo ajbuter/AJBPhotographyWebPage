@@ -1,3 +1,29 @@
+None selected
+
+Skip to content
+Using Gmail with screen readers
+
+13 of 7,430
+Website files
+Inbox
+
+Andrew Buter
+Attachments
+Fri, Aug 28, 10:49 PM (3 days ago)
+ 
+
+Andrew Buter
+Attachments
+Sat, Aug 29, 12:02 AM (2 days ago)
+to me
+
+This file (without the .txt) should get you working back buttons and top navigation. Plus the ability to link to each sport's sub filter.
+
+On Fri, Aug 28, 2026 at 10:49 PM Andrew Buter <andrew.buter@gmail.com> wrote:
+
+
+ One attachment
+  •  Scanned by Gmail
 // =============================================================================
 // AJB Photographs — Front-End Application Logic
 // =============================================================================
@@ -147,9 +173,9 @@ function showHome() {
  *
  * @param {string} cat - Category slug: "sports" | "automotive" | "portraits" | "environmental"
  */
-function showCategory(cat) {
+function showCategory(cat, sportFilter = 'All') {
   currentCategory     = cat;
-  currentSportFilter  = 'All';
+  currentSportFilter  = sportFilter;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('categoryPage').classList.add('active');
   renderCategoryPage();
@@ -235,13 +261,18 @@ function filterSport(sport) {
  * Shows an empty state if no albums match the current filter.
  */
 function renderAlbumsGrid() {
+  let subStr = "";
   // Filter albums by current category
   let albums = db.albums.filter(a => a.category === currentCategory);
 
   // Further filter by sport if in Sports category and a specific sport is selected
   if (currentCategory === 'sports' && currentSportFilter !== 'All') {
     albums = albums.filter(a => a.sport === currentSportFilter);
+    subStr = "/" + currentSportFilter;
   }
+
+  // Add this page to the history
+  history.pushState( {},"", "#" + currentCategory + subStr );
 
   // Sort by date descending
   albums.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
@@ -309,11 +340,14 @@ function renderAlbumPage() {
   if (!album) { showHome(); return; }
 
   const catLabel = catMeta[album.category]?.label || album.category;
+  
+  // Add this page to the history
+  history.pushState( {},"", `#album/${currentAlbumId}` );
 
   // Breadcrumb — "Home › Sports Photography › Album Name"
   document.getElementById('albumBreadcrumb').innerHTML = `
     <a href="#" onclick="showHome()">Home</a> ›
-    <a href="#" onclick="showCategory('${album.category}')">${catLabel}</a> ›
+    <a href="#${album.category}" onclick="showCategory('${album.category}')">${catLabel}</a> ›
     <span>${album.name}</span>
   `;
 
@@ -930,6 +964,18 @@ function handleHash() {
     const album   = db.albums.find(a => a.id === albumId);
     if (album) { showAlbum(albumId); return; }
   }
+  else if (hash.startsWith('#')) {
+    const category = hash.replace('#', '').replace(/\/.*/, '');
+    const sub = hash.replace(/.*\//, '').replace(/%20/g," ");
+    if (catMeta[category]) {
+      if( (sub != hash) && sportsList.includes( sub ) ) {
+      	showCategory(category, sub);
+      } else {
+      	showCategory(category);
+      }
+      return;
+    }
+  }
   showHome();
 }
 
@@ -1043,3 +1089,5 @@ document.addEventListener('error', function(e) {
   // Step 5 — Default to home page if no hash
   if (!location.hash || location.hash === '#') showHome();
 })();
+app.js.txt
+Displaying app.js.txt.
