@@ -127,7 +127,7 @@ if (strpos($uri, '/uploads/') === 0) {
 
 // For thumbnails, dynamically build
 if (strpos($uri, '/thumbs/') === 0) {
-    $filePath = __DIR__ . $uri;
+    $filePath = __DIR__ . urldecode($uri); 
     if (file_exists($filePath) && is_file($filePath)) {
         $mime = mime_content_type($filePath) ?: 'application/octet-stream';
         header('Content-Type: ' . $mime);
