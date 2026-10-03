@@ -254,6 +254,69 @@ if ($uri === '/api/db' && $method === 'GET') {
     jsonResponse($data);
 }
 
+/**
+ * GET /api/download-album
+ * Streams a ZIP file containing all photos in the specified album.
+ */
+if ($uri === '/api/download-album' && $method === 'GET') {
+    $albumId = $_GET['id'] ?? '';
+    if (!$albumId) jsonResponse(['error' => 'No album ID provided.'], 400);
+
+    $raw = @file_get_contents(DB_FILE);
+    $data = json_decode($raw, true);
+    $albums = $data['albums'] ?? [];
+
+    $targetAlbum = null;
+    foreach ($albums as $a) {
+        if ($a['id'] === $albumId) {
+            $targetAlbum = $a;
+            break;
+        }
+    }
+
+    if (!$targetAlbum) jsonResponse(['error' => 'Album not found.'], 404);
+
+    $photos = $targetAlbum['photos'] ?? [];
+    if (empty($photos)) jsonResponse(['error' => 'Album is empty.'], 404);
+
+    $zipName = tempnam(sys_get_temp_dir(), 'album_');
+    $zip = new ZipArchive();
+    
+    if ($zip->open($zipName, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        jsonResponse(['error' => 'Could not create ZIP file.'], 500);
+    }
+
+    foreach ($photos as $index => $photo) {
+        $url = $photo['url'];
+        // Handle locally uploaded files
+        if (strpos($url, '/uploads/') === 0) {
+            $filePath = __DIR__ . $url;
+            if (file_exists($filePath)) {
+                $zip->addFile($filePath, basename($filePath));
+            }
+        } else {
+            // Handle external URLs (e.g., from Paste URLs feature)
+            $content = @file_get_contents($url);
+            if ($content !== false) {
+                $filename = basename(parse_url($url, PHP_URL_PATH));
+                if (!$filename) $filename = "photo_{$index}.jpg";
+                $zip->addFromString($filename, $content);
+            }
+        }
+    }
+    $zip->close();
+
+    // Clean up the album name for a safe file download name
+    $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $targetAlbum['name']);
+
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="' . $safeName . '.zip"');
+    header('Content-Length: ' . filesize($zipName));
+    readfile($zipName);
+    unlink($zipName); // Delete the temporary file from the server
+    exit;
+}
+
 // -----------------------------------------------------------------------------
 // ROUTES Protected (write operations, local network only)
 // -----------------------------------------------------------------------------

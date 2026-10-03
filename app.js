@@ -924,6 +924,24 @@ function shareAlbumById(albumId) {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Album Downloading — Downloadable album zip 
+// -----------------------------------------------------------------------------
+
+/**
+ * Triggers a ZIP download of a specific album.
+ * @param {string} albumId - The album's unique ID
+ */
+function downloadAlbumById(albumId) {
+  showToast('Preparing download, this may take a moment...');
+  window.location.href = `/api/download-album?id=${albumId}`;
+}
+
+/** Downloads the currently open album */
+function downloadAlbum() {
+  downloadAlbumById(currentAlbumId);
+}
+
 /**
  * Handles URL hash changes for deep-linked album sharing.
  * Format: #album/<albumId>
