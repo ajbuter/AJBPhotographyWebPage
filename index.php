@@ -421,7 +421,7 @@
       </div>
       <h1 class="section-title" id="albumPageTitle">Album <em>Name</em></h1>
       <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;">
-        <button class="btn-sm btn-share" onclick="shareAlbum()">🔗 Share Album</button>
+        <button class="btn-sm btn-share" onclick="shareAlbum()"> Share Album</button>
         <button class="btn-sm btn-share" onclick="downloadAlbum()"> Download Album</button>
         <!-- Add Photos button — only visible to local network users -->
         <button class="btn-primary btn-sm" style="padding:10px 22px;" onclick="openAdmin('photos')">+ Add Photos</button>
