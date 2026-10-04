@@ -838,14 +838,26 @@ footer strong { color: var(--cyan); }
    Shown by showToast(message), auto-hides after 3 seconds.
 =========================================================================== */
 .toast {
-  position: fixed; bottom: 2rem; left: 50%;
-  transform: translateX(-50%) translateY(100px); /* Hidden state — off-screen below */
-  background: var(--charcoal); color: var(--white);
-  padding: 14px 24px; border-radius: 8px;
-  font-size: 0.85rem; border: 1px solid var(--cyan);
-  z-index: 9999; transition: transform 0.3s; white-space: nowrap;
+  position: fixed; 
+  bottom: -100px; 
+  left: 50%;
+  transform: translateX(-50%); /* Hidden state — off-screen below */
+  background: var(--charcoal); 
+  color: var(--white);
+  padding: 14px 24px; 
+  border-radius: 8px;
+  font-size: 0.85rem; 
+  border: 1px solid var(--cyan);
+  z-index: 9999; 
+  transition: bottom 0.3s ease, opacity 0.3s ease; 
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
 }
-.toast.show { transform: translateX(-50%) translateY(0); } /* Visible state */
+.toast.show {
+  bottom: 2rem; /* Visible state */
+  opacity: 1;
+ } 
 
 /* ===========================================================================
    EMPTY STATE
